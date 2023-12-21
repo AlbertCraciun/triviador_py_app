@@ -25,7 +25,7 @@ class MainApp(QApplication):
         self.categorySelectionWindow.show()  # Afișăm fereastra de selecție a categoriilor
         
     def showQuestionScreen(self, question, answers):
-        self.questionWindow = QuestionWindow(self, question, answers)
+        self.questionWindow = QuestionWindow(self, question, answers, teams=self.teamNames)
         self.questionWindow.show()
 
 if __name__ == '__main__':

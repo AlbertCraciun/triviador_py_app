@@ -1,12 +1,16 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QMessageBox, QRadioButton
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QMessageBox, QRadioButton, QPushButton, QHBoxLayout, QButtonGroup
 from PyQt5.QtCore import QTimer
 
+from score_window import ScoreWindow
+
 class QuestionWindow(QWidget):
-    def __init__(self, mainApp, question, answers):
+    def __init__(self, mainApp, question, answers, teams):
         super().__init__()
         self.mainApp = mainApp
         self.question = question
         self.answers = answers
+        self.teams = teams  # Lista de echipe
+        self.teamAnswersWidgets = []  # Pentru stocarea widgeturilor specifice fiecărei echipe
         self.initUI()
 
     def initUI(self):
@@ -27,6 +31,11 @@ class QuestionWindow(QWidget):
         self.timer = QLabel("Timp rămas: " + str(self.mainApp.timerDuration) + " secunde", self)
         layout.addWidget(self.timer)
         self.startTimer()
+        
+        self.answerButton = QPushButton("Verifică Răspunsurile", self)
+        self.answerButton.clicked.connect(self.checkTeamAnswers)
+        self.answerButton.hide()  # Inițial butonul este ascuns
+        layout.addWidget(self.answerButton)
 
         self.setLayout(layout)
         self.setWindowTitle("Întrebarea")
@@ -43,21 +52,41 @@ class QuestionWindow(QWidget):
         self.timer.setText(f"Timp rămas: {self.countdown} secunde")
         if self.countdown <= 0:
             self.timerQTimer.stop()
-            self.validateAnswer()
-
-    def validateAnswer(self):
-        selectedAnswer = None
+            self.hideInitialAnswers()
+            self.showTeamAnswerOptions()
+            
+    def hideInitialAnswers(self):
         for radioButton in self.radioButtons:
-            if radioButton.isChecked():
-                selectedAnswer = radioButton.text()
-                break
-        
-        if selectedAnswer == "Paris":  # Presupunând că "Paris" este răspunsul corect
-            # Logica pentru răspunsul corect
-            QMessageBox.information(self, "Răspuns Corect", "Felicitări! Ați selectat răspunsul corect.")
-        else:
-            # Logica pentru răspunsul greșit
-            QMessageBox.warning(self, "Răspuns Greșit", "Din păcate, acesta nu este răspunsul corect.")
+            radioButton.hide()  # Ascunde răspunsurile inițiale
 
-        # Trecerea la următorul ecran (de exemplu, ecranul de scor sau următoarea întrebare)
-        # self.mainApp.showScoreScreen() sau self.mainApp.showNextQuestion()
+    def showTeamAnswerOptions(self):
+        layout = self.layout()
+
+        for team in self.teams:
+            teamLabel = QLabel(f"Răspunsuri pentru echipa {team}")
+            layout.addWidget(teamLabel)
+
+            teamAnswerLayout = QHBoxLayout()
+            teamRadioButtonGroup = QButtonGroup(self)
+            for option in ['A', 'B', 'C', 'D']:
+                radioButton = QRadioButton(option)
+                teamAnswerLayout.addWidget(radioButton)
+                teamRadioButtonGroup.addButton(radioButton)
+
+            self.teamAnswersWidgets.append((team, teamRadioButtonGroup))
+            layout.addLayout(teamAnswerLayout)
+
+        self.answerButton.show()  # Afișează butonul pentru verificarea răspunsurilor
+
+    def checkTeamAnswers(self):
+        for team, radioButtonGroup in self.teamAnswersWidgets:
+            selectedButton = radioButtonGroup.checkedButton()
+            if selectedButton:
+                selectedAnswer = selectedButton.text()
+                # Aici poți adăuga logica pentru evaluarea răspunsurilor fiecărei echipe
+                print(f"Echipa {team} a ales răspunsul {selectedAnswer}")
+        
+        # Afișăm scorurile
+        self.scoreWindow = ScoreWindow(self.mainApp, roundScores={"Echipa 1": 10, "Echipa 2": 20}, totalScores={"Echipa 1": 10, "Echipa 2": 20})
+        self.hide()
+        self.scoreWindow.show()

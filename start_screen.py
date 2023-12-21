@@ -41,7 +41,7 @@ class StartWindow(QWidget):
         # Selector pentru timpul de alegere categorie
         self.categorySelectionTime = QSpinBox(self)
         self.categorySelectionTime.setRange(0, 30)  # timpul între 10 și 60 de secunde
-        self.categorySelectionTime.setValue(30)  # valoarea implicită
+        self.categorySelectionTime.setValue(20)  # valoarea implicită
         layout.addWidget(QLabel('Selectează timpul de alegere pentru categorie (secunde)'))
         layout.addWidget(self.categorySelectionTime)
 
@@ -109,6 +109,7 @@ class StartWindow(QWidget):
         # Salvăm datele și trecem la ecranul următor
         self.mainApp.teamNames = teamNames
         self.mainApp.timerDuration = self.responseTime.value()
+        self.mainApp.categorySelectionTime = self.categorySelectionTime.value()
         self.mainApp.numClassicRounds = self.numClassicRounds.value()
         self.mainApp.numThiefRounds = self.numThiefRounds.value()
         self.mainApp.numChampionRounds = self.numChampionRounds.value()

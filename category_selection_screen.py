@@ -23,7 +23,8 @@ class CategorySelectionWindow(QWidget):
         # Timer
         self.timer = QLabel("Timp rămas: 30 secunde", self)
         layout.addWidget(self.timer)
-        self.startTimer()
+        if self.mainApp.categorySelectionTime > 0:
+            self.startTimer()
 
         self.setLayout(layout)
         self.setWindowTitle("Selectează Categoria")
@@ -31,7 +32,7 @@ class CategorySelectionWindow(QWidget):
 
     def startTimer(self):
         # Implementați logica pentru timer aici
-        self.countdown = self.mainApp.timerDuration
+        self.countdown = self.mainApp.categorySelectionTime
         self.timerQTimer = QTimer(self)
         self.timerQTimer.timeout.connect(self.updateTimer)
         self.timerQTimer.start(1000)
@@ -57,6 +58,6 @@ class CategorySelectionWindow(QWidget):
         answers = ["Paris", "Londra", "Berlin", "Madrid"]
 
         # Afișăm fereastra cu întrebarea
-        self.questionWindow = QuestionWindow(self.mainApp, question, answers)
+        self.questionWindow = QuestionWindow(self.mainApp, question, answers, teams=self.mainApp.teamNames)
         self.hide()  # Ascundem fereastra de selecție a categoriilor
         self.questionWindow.show()
