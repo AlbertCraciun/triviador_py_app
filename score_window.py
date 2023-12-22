@@ -1,20 +1,22 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton
 
 class ScoreWindow(QWidget):
-    def __init__(self, mainApp, roundScores, totalScores):
+    def __init__(self, mainApp, roundAnswers):
         super().__init__()
         self.mainApp = mainApp
-        self.roundScores = roundScores  # Scorurile pentru runda curentă
-        self.totalScores = totalScores  # Scorurile totale
+        self.roundAnswers = roundAnswers  # Răspunsurile pentru runda curentă
         self.initUI()
 
     def initUI(self):
         layout = QVBoxLayout()
         
+        # Calculăm scorurile pentru runda curentă
+        roundScores = self.calculateScores(self.roundAnswers)
+
         # Afișarea scorurilor
-        for teamName, score in self.totalScores.items():
-            # self.roundScore = self.calculateScores(teamAnswers, correctAnswer)
-            label = QLabel(f"{teamName}: Runda: , Total: {score}")
+        for teamName in self.mainApp.teamNames:
+            score = roundScores.get(teamName, 0)
+            label = QLabel(f"{teamName}: Scor Runda: {score}, Total: {self.mainApp.totalScores[teamName]}")
             layout.addWidget(label)
 
         # Buton pentru continuare
@@ -26,30 +28,27 @@ class ScoreWindow(QWidget):
         self.setWindowTitle("Scoruri")
         self.setGeometry(300, 300, 400, 300)
         
-    def calculateScores(self, teamAnswers, correctAnswer):
-        # Calculul scorurilor în conformitate cu regulile specificate
-        # teamAnswers este un dicționar cu formatul {teamName: answer}
+    def calculateScores(self, roundAnswers):
         roundScores = {}
-        for team, answer in teamAnswers.items():
-            if answer == correctAnswer:
+        for team, correct in roundAnswers.items():
+            if correct:
+                # Scorul pentru răspuns corect
                 if self.mainApp.currentTeamName == team:
                     # Echipa de rând cu răspuns corect
-                    roundScores[team] = 40 if self.mainApp.randomQuestion else 20
+                    score = 40 if self.mainApp.randomQuestion else 20
                 else:
                     # Celelalte echipe cu răspuns corect
-                    roundScores[team] = 15 if self.mainApp.currentTeamName != team and self.mainApp.randomQuestion else 10
+                    score = 15 if self.mainApp.currentTeamName != team and roundAnswers[self.mainApp.currentTeamName] == False else 10
             else:
-                # Răspuns greșit
-                roundScores[team] = 0
-
-        # Actualizarea scorurilor totale
-        for team in self.mainApp.teamNames:
-            self.totalScores[team] += roundScores.get(team, 0)
-
+                # Scorul pentru răspuns greșit
+                score = 0
+            roundScores[team] = score
+            self.mainApp.totalScores[team] += score  # Actualizăm scorul total
         return roundScores
 
     def onContinue(self):
         # Logică pentru trecerea la următorul ecran
         # De exemplu: revenire la ecranul de selecție a categoriilor sau încheierea jocului
         self.mainApp.nextTeam()
+        self.ScoreWindow.hide()
         self.mainApp.showNextScreen()

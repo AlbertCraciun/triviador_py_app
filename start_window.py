@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QSpinBox, QMessageBox, QCheckBox
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QSpinBox, QMessageBox, QCheckBox, QFileDialog
 from PyQt5.QtCore import Qt
 
 class StartWindow(QWidget):
@@ -16,6 +16,10 @@ class StartWindow(QWidget):
         subtitle = QLabel('aplicație creată de Albert C.')
         layout.addWidget(title)
         layout.addWidget(subtitle)
+        
+        self.filePickerButton = QPushButton('Selectează fișierul de întrebări', self)
+        self.filePickerButton.clicked.connect(self.openFileDialog)
+        layout.addWidget(self.filePickerButton)
 
         # Conectăm fiecare câmp de introducere a echipelor la un nou slot
         for i in range(15):
@@ -127,3 +131,8 @@ class StartWindow(QWidget):
         isEnabled = state == Qt.Checked
         self.qLabelChampionRounds.setVisible(isEnabled)
         self.numChampionRounds.setVisible(isEnabled)
+        
+    def openFileDialog(self):
+        fileName, _ = QFileDialog.getOpenFileName(self, "Selectează fișierul excel", "", "Excel Files (*.xlsx)")
+        if fileName:
+            self.mainApp.loadQuestions(fileName)

@@ -1,7 +1,8 @@
+from random import random
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton
 from PyQt5.QtCore import QTimer
 
-from question_screen import QuestionWindow
+from question_window import QuestionWindow
 
 class CategorySelectionWindow(QWidget):
     def __init__(self, mainApp):
@@ -16,9 +17,8 @@ class CategorySelectionWindow(QWidget):
         currentTeamLabel = QLabel(f"Echipa de rând: {self.mainApp.currentTeamName}")
         layout.addWidget(currentTeamLabel)
 
-        # Aici, adăugați cod pentru afișarea categoriilor
-        # De exemplu, puteți folosi o listă de butoane pentru fiecare categorie
-        self.categories = ["Istorie", "Știință", "Artă", "Sport", "Geografie", "Aleatorie"]
+        # TO DO: add categories from excell
+        self.categories = ["Istorie", "Știință", "Artă", "Sport", "Geografie", "Aleator"]
         for category in self.categories:
             btn = QPushButton(category, self)
             btn.clicked.connect(lambda: self.onCategorySelected(category))
@@ -49,8 +49,6 @@ class CategorySelectionWindow(QWidget):
             self.handleTimeExpired()  # Metodă nouă pentru gestionarea expirării timpului
 
     def handleTimeExpired(self):
-        # Logica pentru când timpul expiră
-        # De exemplu, putem selecta automat o categorie aleatorie
         self.onCategorySelected("Aleator")
 
     def onCategorySelected(self, category):
@@ -58,10 +56,17 @@ class CategorySelectionWindow(QWidget):
         print(f"Categoria selectată: {category}")
         # Trecerea la ecranul cu întrebarea propriu-zisă
         
-        question = "Ce este capitala Franței?"
-        answers = ["A. Paris", "B. Londra", "C. Berlin", "D. Madrid"]
+        if category == "Aleator":
+            self.mainApp.randomQuestion = True
+            question = random.choice(self.mainApp.questions)
+        else:
+            possible_questions = [q for q in self.mainApp.questions if q['categorie'] == category]
+            question = random.choice(possible_questions) if possible_questions else None
+        
+        self.mainApp.selectedQuestion = question
+        self.mainApp.questions.remove(question)  # Eliminăm întrebarea selectată din listă
 
         # Afișăm fereastra cu întrebarea
-        self.questionWindow = QuestionWindow(self.mainApp, question, answers, teams=self.mainApp.teamNames)
+        self.questionWindow = QuestionWindow(self.mainApp, question, teams=self.mainApp.teamNames)
         self.hide()  # Ascundem fereastra de selecție a categoriilor
         self.questionWindow.show()

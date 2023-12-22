@@ -4,11 +4,10 @@ from PyQt5.QtCore import QTimer
 from score_window import ScoreWindow
 
 class QuestionWindow(QWidget):
-    def __init__(self, mainApp, question, answers, teams):
+    def __init__(self, mainApp, question, teams):
         super().__init__()
         self.mainApp = mainApp
         self.question = question
-        self.answers = answers
         self.teams = teams  # Lista de echipe
         self.teamAnswersWidgets = []  # Pentru stocarea widgeturilor specifice fiecărei echipe
         self.initUI()
@@ -58,10 +57,11 @@ class QuestionWindow(QWidget):
         if self.countdown <= 0:
             self.timerQTimer.stop()
             self.hideInitialAnswers()
+            self.showTeamAnswerOptions()
             
     def hideInitialAnswers(self):
         for radioButton in self.radioButtons:
-            radioButton.hide()  # Ascunde răspunsurile inițiale
+            radioButton.hide()  # Ascunde răspunsurile
 
     def showTeamAnswerOptions(self):
         layout = self.layout()
@@ -82,17 +82,19 @@ class QuestionWindow(QWidget):
 
         self.answerButton.show()  # Afișează butonul pentru verificarea răspunsurilor
 
+    # TODO: Implementați logica pentru verificarea răspunsurilor pt ca textul e o litera nu raspunsul corect
     def checkTeamAnswers(self):
         self.timerQTimer.stop()
         self.hideInitialAnswers()
-        for team, radioButtonGroup in self.teamAnswersWidgets:
-            selectedButton = radioButtonGroup.checkedButton()
+        roundAns = {}
+        for team, teamRadioButtonGroup in self.teamAnswersWidgets:
+            selectedButton = teamRadioButtonGroup.checkedButton()
             if selectedButton:
                 selectedAnswer = selectedButton.text()
-                # Aici poți adăuga logica pentru evaluarea răspunsurilor fiecărei echipe
-                print(f"Echipa {team} a ales răspunsul {selectedAnswer}")
+                correct = selectedAnswer == self.question['răspuns corect']
+                roundAns[team] = correct
         
         # Afișăm scorurile
-        self.scoreWindow = ScoreWindow(self.mainApp, roundScores={"Echipa 1": 10, "Echipa 2": 20}, totalScores={"Echipa 1": 10, "Echipa 2": 20})
+        self.scoreWindow = ScoreWindow(self.mainApp, roundAns)
         self.hide()
         self.scoreWindow.show()
