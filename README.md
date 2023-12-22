@@ -1,5 +1,11 @@
 # triviador_py_app
 
+## Requirements
+python 3.11.0 +
+pip 21.2.4 +
+pyqt5 5.15.4 +
+```pip install pyqt5```
+
 ### draft of flow:
 
 1. Ecranul 1 - ecranul de start:
