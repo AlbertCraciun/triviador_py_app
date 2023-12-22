@@ -1,7 +1,7 @@
 # triviador_py_app
 
 ## Requirements
-python 3.11.0 +
+python 3.11.6 +
 pip 21.2.4 +
 pyqt5 5.15.4 +
 ```pip install pyqt5```

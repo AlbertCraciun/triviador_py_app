@@ -18,19 +18,59 @@ class MainApp(QApplication):
         self.startWindow = StartWindow(self)
         self.startWindow.show()
         self.championRoundsEnabled = False
-        self.setStyleSheet("QWidget { background-color: black; }")
+        self.setStyleSheet("""
+            QWidget {
+                background-color: black;
+                color: white; 
+                font-family: Arial;
+            }
+            QLabel {
+                font-size: 18px;
+                text-align: center;
+            }
+            QPushButton {
+                background-color: #444;
+                border: 2px solid #555;
+                border-radius: 10px;
+                padding: 5px;
+                font-size: 16px;
+                min-height: 30px;
+                margin: 5px;
+            }
+            QPushButton:hover {
+                background-color: #666;
+            }
+            QLineEdit {
+                border: 1px solid #555;
+                border-radius: 5px;
+                padding: 5px;
+                margin: 5px;
+            }
+            # QSpinBox {
+            #     border: 1px solid #555;
+            #     border-radius: 5px;
+            #     padding: 5px;
+            #     margin: 5px;
+            # }
+            QCheckBox {
+                spacing: 5px;
+            }
+        """)
         # self.setStyleSheet("QWidget { font-size: 14pt; }")
         # self.setStyleSheet("QWidget { color: white; }") ## in loc de QWidgent poate fi trecut Qdialog sau altceva
         
-        self.currentTeamIndex = 1
+        self.currentTeamIndex = -1
         self.currentTeamName = self.teamNames[self.currentTeamIndex] if self.teamNames else None
         
         self.questions = []
         self.selected_question = []
         
         self.randomQuestion = False
+        self.totalScores = {}
+        self.roundType = None
 
     def showNextScreen(self):
+        self.nextTeam()
         self.categorySelectionWindow = CategorySelectionWindow(self)
         self.startWindow.hide()  # Ascundem fereastra de start
         self.categorySelectionWindow.show()  # Afișăm fereastra de selecție a categoriilor

@@ -1,5 +1,5 @@
-from random import random
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton
+import random
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QMessageBox
 from PyQt5.QtCore import QTimer
 
 from question_window import QuestionWindow
@@ -14,7 +14,7 @@ class CategorySelectionWindow(QWidget):
         layout = QVBoxLayout()
         
         # Afișarea echipei de rând
-        currentTeamLabel = QLabel(f"Echipa de rând: {self.mainApp.currentTeamName}")
+        currentTeamLabel = QLabel(f"Rândul echipei: {self.mainApp.currentTeamName}")
         layout.addWidget(currentTeamLabel)
 
         # TO DO: add categories from excell
@@ -54,7 +54,10 @@ class CategorySelectionWindow(QWidget):
     def onCategorySelected(self, category):
         # Implementați logica pentru atunci când o categorie este selectată
         print(f"Categoria selectată: {category}")
-        # Trecerea la ecranul cu întrebarea propriu-zisă
+        
+        if len(self.mainApp.questions) == 0:
+            QMessageBox.warning(self, 'Eroare', 'Nu mai există întrebări!')
+            return
         
         if category == "Aleator":
             self.mainApp.randomQuestion = True

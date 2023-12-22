@@ -38,7 +38,8 @@ class ScoreWindow(QWidget):
                     score = 40 if self.mainApp.randomQuestion else 20
                 else:
                     # Celelalte echipe cu răspuns corect
-                    score = 15 if self.mainApp.currentTeamName != team and roundAnswers[self.mainApp.currentTeamName] == False else 10
+                    if self.mainApp.currentTeamName is not None and self.mainApp.currentTeamName in roundAnswers:
+                        score = 15 if not roundAnswers[self.mainApp.currentTeamName] else 10
             else:
                 # Scorul pentru răspuns greșit
                 score = 0
@@ -49,6 +50,5 @@ class ScoreWindow(QWidget):
     def onContinue(self):
         # Logică pentru trecerea la următorul ecran
         # De exemplu: revenire la ecranul de selecție a categoriilor sau încheierea jocului
-        self.mainApp.nextTeam()
-        self.ScoreWindow.hide()
+        self.hide()
         self.mainApp.showNextScreen()

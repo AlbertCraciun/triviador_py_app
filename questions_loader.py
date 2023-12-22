@@ -19,4 +19,5 @@ def load_questions_from_excel(file_path):
         }
         processed_questions.append(processed_question)
 
+    print(f"Am încărcat {len(processed_questions)} întrebări din fișierul {file_path}")
     return processed_questions

@@ -16,26 +16,42 @@ class QuestionWindow(QWidget):
         layout = QVBoxLayout()
         
         # Afișarea echipei de rând
-        currentTeamLabel = QLabel(f"Echipa de rând: {self.mainApp.currentTeamName}")
+        currentTeamLabel = QLabel(f"Rândul echipei: {self.mainApp.currentTeamName}")
         layout.addWidget(currentTeamLabel)
 
         # Afișarea întrebării
-        questionLabel = QLabel(self.question)
+        questionLabel = QLabel(self.question['întrebare'])  # Folosim textul întrebării
         layout.addWidget(questionLabel)
 
-        # Afișarea variantelor de răspuns
-        self.radioButtons = []
-        for answer in self.answers:
-            radioButton = QRadioButton(answer)
-            self.radioButtons.append(radioButton)
-            layout.addWidget(radioButton)
-
-        # self.showTeamAnswerOptions()
+        # Afișarea variantelor de răspuns cu litere
+        self.labels = []
+        self.answerMapping = {}  # Dicționar pentru a asocia răspunsurile cu litere
+        letters = ['A', 'B', 'C', 'D']
+        for i, answer in enumerate(self.question['răspunsuri']):
+            label_text = f"{letters[i]}. {answer}"
+            text = QLabel(label_text)
+            self.labels.append(text)
+            layout.addWidget(text)
+            self.answerMapping[letters[i]] = answer
         
         # Timer
         self.timer = QLabel("Timp rămas: " + str(self.mainApp.timerDuration) + " secunde", self)
         layout.addWidget(self.timer)
         self.startTimer()
+        
+        for team in self.teams:
+            teamLabel = QLabel(f"Răspunsuri pentru echipa {team}")
+            layout.addWidget(teamLabel)
+
+            teamAnswerLayout = QHBoxLayout()
+            teamRadioButtonGroup = QButtonGroup(self)
+            for option in letters:
+                radioButton = QRadioButton(option)
+                teamAnswerLayout.addWidget(radioButton)
+                teamRadioButtonGroup.addButton(radioButton)
+
+            self.teamAnswersWidgets.append((team, teamRadioButtonGroup))
+            layout.addLayout(teamAnswerLayout)
         
         self.answerButton = QPushButton("Verifică Răspunsurile", self)
         self.answerButton.clicked.connect(self.checkTeamAnswers)
@@ -57,32 +73,11 @@ class QuestionWindow(QWidget):
         if self.countdown <= 0:
             self.timerQTimer.stop()
             self.hideInitialAnswers()
-            self.showTeamAnswerOptions()
             
     def hideInitialAnswers(self):
-        for radioButton in self.radioButtons:
-            radioButton.hide()  # Ascunde răspunsurile
+        for label in self.labels:
+            label.setVisible(False)
 
-    def showTeamAnswerOptions(self):
-        layout = self.layout()
-
-        for team in self.teams:
-            teamLabel = QLabel(f"Răspunsuri pentru echipa {team}")
-            layout.addWidget(teamLabel)
-
-            teamAnswerLayout = QHBoxLayout()
-            teamRadioButtonGroup = QButtonGroup(self)
-            for option in ['A', 'B', 'C', 'D']:
-                radioButton = QRadioButton(option)
-                teamAnswerLayout.addWidget(radioButton)
-                teamRadioButtonGroup.addButton(radioButton)
-
-            self.teamAnswersWidgets.append((team, teamRadioButtonGroup))
-            layout.addLayout(teamAnswerLayout)
-
-        self.answerButton.show()  # Afișează butonul pentru verificarea răspunsurilor
-
-    # TODO: Implementați logica pentru verificarea răspunsurilor pt ca textul e o litera nu raspunsul corect
     def checkTeamAnswers(self):
         self.timerQTimer.stop()
         self.hideInitialAnswers()
@@ -90,7 +85,8 @@ class QuestionWindow(QWidget):
         for team, teamRadioButtonGroup in self.teamAnswersWidgets:
             selectedButton = teamRadioButtonGroup.checkedButton()
             if selectedButton:
-                selectedAnswer = selectedButton.text()
+                selectedLetter = selectedButton.text()
+                selectedAnswer = self.answerMapping[selectedLetter]
                 correct = selectedAnswer == self.question['răspuns corect']
                 roundAns[team] = correct
         

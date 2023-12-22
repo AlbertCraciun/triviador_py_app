@@ -1,6 +1,8 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QSpinBox, QMessageBox, QCheckBox, QFileDialog
 from PyQt5.QtCore import Qt
 
+from questions_loader import load_questions_from_excel
+
 class StartWindow(QWidget):
     def __init__(self, mainApp):
         super().__init__()
@@ -106,9 +108,18 @@ class StartWindow(QWidget):
         if len(teamNames) < 2:  # Presupunem că sunt necesare cel puțin 2 echipe
             QMessageBox.warning(self, 'Eroare', 'Introduceți cel puțin două echipe!')
             return
-        if self.numClassicRounds.value() < len(teamNames):
-            QMessageBox.warning(self, 'Eroare', 'Introduceți cel puțin o rundă!')
+        if self.numClassicRounds.value() < len(teamNames) or self.numClassicRounds.value() % len(teamNames) != 0:
+            QMessageBox.warning(self, 'Eroare', 'Introduceți un număr de runde multiplu de numărul de echipe!')
             return
+        if self.numThiefRounds.value() % 2 != 0:
+            QMessageBox.warning(self, 'Eroare', 'Introduceți un număr par de runde!')
+            return
+        if len(self.mainApp.questions) == 0:
+            QMessageBox.warning(self, 'Eroare', 'Nu ați selectat fișierul de întrebări!')
+            return
+        
+        for teamName in teamNames:
+            self.mainApp.totalScores[teamName] = 0
 
         # Salvăm datele și trecem la ecranul următor
         self.mainApp.teamNames = teamNames
@@ -118,6 +129,7 @@ class StartWindow(QWidget):
         self.mainApp.numThiefRounds = self.numThiefRounds.value()
         self.mainApp.numChampionRounds = self.numChampionRounds.value()
         self.mainApp.showNextScreen()  # Metodă pentru a afișa ecranul următor
+        
 
     def addTeam(self):
         # Activăm câmpul următor pentru numele echipei
@@ -135,4 +147,5 @@ class StartWindow(QWidget):
     def openFileDialog(self):
         fileName, _ = QFileDialog.getOpenFileName(self, "Selectează fișierul excel", "", "Excel Files (*.xlsx)")
         if fileName:
-            self.mainApp.loadQuestions(fileName)
+            self.mainApp.questions = load_questions_from_excel(fileName)
+            self.filePickerButton.setText(fileName.split('/')[-1])
