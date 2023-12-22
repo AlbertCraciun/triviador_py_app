@@ -11,6 +11,10 @@ class CategorySelectionWindow(QWidget):
 
     def initUI(self):
         layout = QVBoxLayout()
+        
+        # Afișarea echipei de rând
+        currentTeamLabel = QLabel(f"Echipa de rând: {self.mainApp.currentTeamName}")
+        layout.addWidget(currentTeamLabel)
 
         # Aici, adăugați cod pentru afișarea categoriilor
         # De exemplu, puteți folosi o listă de butoane pentru fiecare categorie
@@ -55,7 +59,7 @@ class CategorySelectionWindow(QWidget):
         # Trecerea la ecranul cu întrebarea propriu-zisă
         
         question = "Ce este capitala Franței?"
-        answers = ["Paris", "Londra", "Berlin", "Madrid"]
+        answers = ["A. Paris", "B. Londra", "C. Berlin", "D. Madrid"]
 
         # Afișăm fereastra cu întrebarea
         self.questionWindow = QuestionWindow(self.mainApp, question, answers, teams=self.mainApp.teamNames)

@@ -10,11 +10,11 @@ class ScoreWindow(QWidget):
 
     def initUI(self):
         layout = QVBoxLayout()
-
+        
         # Afișarea scorurilor
         for teamName, score in self.totalScores.items():
-            roundScore = self.roundScores.get(teamName, 0)
-            label = QLabel(f"{teamName}: Runda: {roundScore}, Total: {score}")
+            # self.roundScore = self.calculateScores(teamAnswers, correctAnswer)
+            label = QLabel(f"{teamName}: Runda: , Total: {score}")
             layout.addWidget(label)
 
         # Buton pentru continuare
@@ -25,8 +25,31 @@ class ScoreWindow(QWidget):
         self.setLayout(layout)
         self.setWindowTitle("Scoruri")
         self.setGeometry(300, 300, 400, 300)
+        
+    def calculateScores(self, teamAnswers, correctAnswer):
+        # Calculul scorurilor în conformitate cu regulile specificate
+        # teamAnswers este un dicționar cu formatul {teamName: answer}
+        roundScores = {}
+        for team, answer in teamAnswers.items():
+            if answer == correctAnswer:
+                if self.mainApp.currentTeamName == team:
+                    # Echipa de rând cu răspuns corect
+                    roundScores[team] = 40 if self.mainApp.randomQuestion else 20
+                else:
+                    # Celelalte echipe cu răspuns corect
+                    roundScores[team] = 15 if self.mainApp.currentTeamName != team and self.mainApp.randomQuestion else 10
+            else:
+                # Răspuns greșit
+                roundScores[team] = 0
+
+        # Actualizarea scorurilor totale
+        for team in self.mainApp.teamNames:
+            self.totalScores[team] += roundScores.get(team, 0)
+
+        return roundScores
 
     def onContinue(self):
         # Logică pentru trecerea la următorul ecran
         # De exemplu: revenire la ecranul de selecție a categoriilor sau încheierea jocului
+        self.mainApp.nextTeam()
         self.mainApp.showNextScreen()

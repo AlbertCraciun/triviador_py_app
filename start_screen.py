@@ -102,7 +102,7 @@ class StartWindow(QWidget):
         if len(teamNames) < 2:  # Presupunem că sunt necesare cel puțin 2 echipe
             QMessageBox.warning(self, 'Eroare', 'Introduceți cel puțin două echipe!')
             return
-        if self.numClassicRounds.value() + self.numThiefRounds.value() + self.numChampionRounds.value() < 1:
+        if self.numClassicRounds.value() < len(teamNames):
             QMessageBox.warning(self, 'Eroare', 'Introduceți cel puțin o rundă!')
             return
 

@@ -1,7 +1,6 @@
 import sys
 from PyQt5.QtWidgets import QApplication
 from category_selection_screen import CategorySelectionWindow
-from game_config_screen import GameConfigWindow
 from question_screen import QuestionWindow
 
 from start_screen import StartWindow
@@ -18,6 +17,12 @@ class MainApp(QApplication):
         self.startWindow = StartWindow(self)
         self.startWindow.show()
         self.championRoundsEnabled = False
+        self.setStyleSheet("QWidget { background-color: black; }")
+        # self.setStyleSheet("QWidget { font-size: 14pt; }")
+        # self.setStyleSheet("QWidget { color: white; }") ## in loc de QWidgent poate fi trecut Qdialog sau altceva
+        
+        self.currentTeamIndex = 1
+        self.currentTeamName = self.teamNames[self.currentTeamIndex] if self.teamNames else None
 
     def showNextScreen(self):
         self.categorySelectionWindow = CategorySelectionWindow(self)
@@ -27,6 +32,11 @@ class MainApp(QApplication):
     def showQuestionScreen(self, question, answers):
         self.questionWindow = QuestionWindow(self, question, answers, teams=self.teamNames)
         self.questionWindow.show()
+
+    def nextTeam(self):
+        if self.teamNames:
+            self.currentTeamIndex = (self.currentTeamIndex + 1) % len(self.teamNames)
+            self.currentTeamName = self.teamNames[self.currentTeamIndex]
 
 if __name__ == '__main__':
     app = MainApp(sys.argv)
