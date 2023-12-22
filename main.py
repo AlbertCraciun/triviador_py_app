@@ -1,6 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication
 from category_selection_window import CategorySelectionWindow
+from duel_selection_window import DuelSelectionWindow
 from question_window import QuestionWindow
 from questions_loader import load_questions_from_excel
 
@@ -88,6 +89,12 @@ class MainApp(QApplication):
     def loadQuestions(self, filePath):
         # Încărcați întrebările din fișierul Excel specificat
         self.questions = load_questions_from_excel(filePath)
+        
+    def startDuel(self):
+        # Logica pentru a începe o rundă de duel
+        self.duelSelectionWindow = DuelSelectionWindow(self)
+        self.categorySelectionWindow.hide()  # sau fereastra care trebuie ascunsă
+        self.duelSelectionWindow.show()
 
 if __name__ == '__main__':
     app = MainApp(sys.argv)

@@ -34,7 +34,7 @@ pyqt5 5.15.4 +
 
 5. de aici se repeta ecranele 2-3-4 pana se termina numarul de runde clasice
 
-6. Incep rundele de duel, runde in care se poate fura punctajul. E un ecran de tranzitie pe care se da start runde duel
+6. Incep rundele de duel, runde in care se poate fura punctajul. E un ecran de tranzitie pe care apare punctajul echipelor total si se da start runde duel
 
 7. Ecran duel:
 - echipa de rand alege echipa pe care o ataca si categoria de intrebare apoi (daca vrea)
