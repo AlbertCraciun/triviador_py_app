@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QSpinBox, QMessageBox, QCheckBox, QFileDialog
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QSpinBox, QMessageBox, QCheckBox, QFileDialog, QHBoxLayout
 from PyQt5.QtCore import Qt
 
 from b_questions_loader import load_questions_from_excel
@@ -12,12 +12,18 @@ class StartWindow(QWidget):
 
     def initUI(self):
         layout = QVBoxLayout()
+        
+        # Adaugă un spațiu înainte de widgeturi pentru a le împinge în jos
+        layout.addStretch()
 
         # Titlu
-        title = QLabel('AMiCUS Trivia')
-        subtitle = QLabel('aplicație creată de Albert C.')
-        layout.addWidget(title)
-        layout.addWidget(subtitle)
+        titleLayout = QHBoxLayout()
+        titleLayout.addStretch()
+        title = QLabel('AMiCUS Triviador\naplicație creată de Albert Crăciun')
+        title.setAlignment(Qt.AlignCenter)
+        titleLayout.addWidget(title)
+        titleLayout.addStretch()
+        layout.addLayout(titleLayout)
         
         self.filePickerButton = QPushButton('Selectează fișierul de întrebări', self)
         self.filePickerButton.clicked.connect(self.openFileDialog)
@@ -84,6 +90,9 @@ class StartWindow(QWidget):
         startBtn = QPushButton('Start', self)
         startBtn.clicked.connect(self.onStart)
         layout.addWidget(startBtn)
+        
+        # Adaugă un spațiu după widgeturi pentru a le centra
+        layout.addStretch()
 
         self.setLayout(layout)
         self.setWindowTitle('Joc de Cultură Generală')

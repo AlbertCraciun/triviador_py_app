@@ -21,7 +21,9 @@ class CategorySelectionWindow(QWidget):
         self.categories = ["Istorie", "Știință", "Artă", "Sport", "Geografie", "Aleator"]
         for category in self.categories:
             btn = QPushButton(category, self)
-            btn.clicked.connect(lambda: self.onCategorySelected(category))
+            # Capturăm valoarea curentă a lui 'category' pentru fiecare buton
+            btn.clicked.connect(lambda _, c=category: self.onCategorySelected(c))
+            layout.addWidget(btn)
             layout.addWidget(btn)
 
         # Timer
