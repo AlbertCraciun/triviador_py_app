@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QRadioButton, QPushButton, QHBoxLayout, QButtonGroup
 from PyQt5.QtCore import QTimer
 
-from score_window import ScoreWindow
+from f_score_window import ScoreWindow
 
 class QuestionWindow(QWidget):
     def __init__(self, mainApp, question, teams):

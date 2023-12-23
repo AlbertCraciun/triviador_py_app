@@ -1,13 +1,14 @@
 import sys
 from PyQt5.QtWidgets import QApplication
-from category_selection_window import CategorySelectionWindow
-from duel_selection_window import DuelSelectionWindow
-from question_window import QuestionWindow
-from questions_loader import load_questions_from_excel
+from d_category_selection import CategorySelectionWindow
+from h_duel_selection import DuelSelectionWindow
+from e_question_window import QuestionWindow
+from b_questions_loader import load_questions_from_excel
 
-from start_window import StartWindow
+from c_start_window import StartWindow
 
 class MainApp(QApplication):
+        
     def __init__(self, sys_argv):
         super().__init__(sys_argv)
         self.teamNames = []
@@ -68,7 +69,8 @@ class MainApp(QApplication):
         
         self.randomQuestion = False
         self.totalScores = {}
-        self.roundType = None
+        self.roundType = "Classic"
+        self.passedRounds = 0
 
     def showNextScreen(self):
         self.nextTeam()
@@ -83,8 +85,26 @@ class MainApp(QApplication):
     def nextTeam(self):
         if self.teamNames:
             self.randomQuestion = False
-            self.currentTeamIndex = (self.currentTeamIndex + 1) % len(self.teamNames) # Trecem la următoarea echipă din listă (sau prima dacă am ajuns la final)
-            self.currentTeamName = self.teamNames[self.currentTeamIndex] # Actualizăm numele echipei de rând
+            self.currentTeamIndex = (self.currentTeamIndex + 1) % len(self.teamNames)
+            self.currentTeamName = self.teamNames[self.currentTeamIndex]
+            self.passedRounds += 1
+
+            # Verificăm dacă s-au terminat rundele clasice
+            if self.passedRounds > self.numClassicRounds:
+                # Dacă există runde de duel, le începem
+                if self.numThiefRounds > 0 and self.roundType == "Classic":
+                    self.roundType = "Thief"
+                    self.numThiefRounds -= 1
+                    self.startDuel()
+                # Dacă nu mai sunt runde de duel, trecem la runde de campioni, dacă sunt specificate
+                elif self.numChampionRounds > 0 and self.roundType != "Champion":
+                    self.roundType = "Champion"
+                    self.numChampionRounds -= 1
+                    # TODO: Implementați logica pentru a începe runda de campioni
+                # Dacă nu mai sunt nici runde de duel, nici de campioni, jocul se termină
+                else:
+                    # TODO: Implementați logica pentru a încheia jocul
+                    pass
     
     def loadQuestions(self, filePath):
         # Încărcați întrebările din fișierul Excel specificat
@@ -93,7 +113,7 @@ class MainApp(QApplication):
     def startDuel(self):
         # Logica pentru a începe o rundă de duel
         self.duelSelectionWindow = DuelSelectionWindow(self)
-        self.categorySelectionWindow.hide()  # sau fereastra care trebuie ascunsă
+        self.hide()  # TODO: sau fereastra care trebuie ascunsă
         self.duelSelectionWindow.show()
 
 if __name__ == '__main__':

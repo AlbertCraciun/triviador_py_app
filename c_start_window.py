@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QSpinBox, QMessageBox, QCheckBox, QFileDialog
 from PyQt5.QtCore import Qt
 
-from questions_loader import load_questions_from_excel
+from b_questions_loader import load_questions_from_excel
 
 class StartWindow(QWidget):
     def __init__(self, mainApp):
