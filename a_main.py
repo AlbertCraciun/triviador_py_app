@@ -58,8 +58,6 @@ class MainApp(QApplication):
                 spacing: 5px;
             }
         """)
-        # self.setStyleSheet("QWidget { font-size: 14pt; }")
-        # self.setStyleSheet("QWidget { color: white; }") ## in loc de QWidgent poate fi trecut Qdialog sau altceva
         
         self.currentTeamIndex = -1
         self.currentTeamName = self.teamNames[self.currentTeamIndex] if self.teamNames else None
