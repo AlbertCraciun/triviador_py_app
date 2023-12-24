@@ -27,13 +27,15 @@ class TiebreakerWindow(QWidget):
         defendingTeam = self.mainApp.selectedOpponent
         
         possible_questions = [q for q in self.mainApp.questions if q['categorie'] == "Departajare"]
-        question = random.choice(possible_questions) if possible_questions else None
+        self.question = random.choice(possible_questions) if possible_questions else None
         
-        if question is None:
+        if self.question is None:
             QMessageBox.warning(self, 'Eroare', 'Nu există întrebări de departajare.')
+            self.close()  # Închide fereastra dacă nu există întrebări de departajare
+            return
         
         # Afișarea întrebării
-        questionLabel = QLabel(question['întrebare'])
+        questionLabel = QLabel(self.question['întrebare'])
         questionLabel.setAlignment(Qt.AlignCenter)
         layout.addWidget(questionLabel)
         
@@ -103,6 +105,9 @@ class TiebreakerWindow(QWidget):
 
     def confirmAnswers(self):
         self.timerQTimer.stop()
+        
+        self.mainApp.tiebreakerCounts[self.mainApp.currentTeamName] += 1
+        self.mainApp.tiebreakerCounts[self.mainApp.selectedOpponent] += 1
         
         # Extragerea și verificarea răspunsurilor
         answers = {team: float(input.text()) for team, input in self.answerInputs.items() if input.text()}

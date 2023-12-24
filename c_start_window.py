@@ -94,7 +94,7 @@ class StartWindow(QWidget):
         categoryTimeLayout.addWidget(categoryTimeLabel)
 
         self.categorySelectionTime = QSpinBox(self)
-        self.categorySelectionTime.setRange(0, 30)
+        self.categorySelectionTime.setRange(10, 50)
         self.categorySelectionTime.setValue(20)
         categoryTimeLayout.addWidget(self.categorySelectionTime)
 
@@ -223,6 +223,11 @@ class StartWindow(QWidget):
 
         # Salvăm datele și trecem la ecranul următor
         self.mainApp.teamNames = teamNames
+        self.mainApp.tiebreakerCounts = {teamName: 0 for teamName in teamNames}
+        self.mainApp.totalQuestionCounts = {teamName: 0 for teamName in teamNames}
+        self.mainApp.correctAnswersCount = {teamName: 0 for teamName in teamNames}
+        self.mainApp.championScores = {teamName: 0 for teamName in teamNames}
+        self.mainApp.totalScores = {teamName: 0 for teamName in teamNames}
         self.mainApp.timerDuration = self.responseTime.value()
         self.mainApp.categorySelectionTime = self.categorySelectionTime.value()
         self.mainApp.numClassicRounds = self.numClassicRounds.value()

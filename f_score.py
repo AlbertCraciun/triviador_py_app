@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QMessageB
 from PyQt5.QtCore import Qt
 
 from g_duel_start import DuelTransitionWindow
+from i_champion_start import ChampionTransitionWindow
 
 class ScoreWindow(QWidget):
     def __init__(self, mainApp, roundAnswers):
@@ -16,13 +17,16 @@ class ScoreWindow(QWidget):
         
         roundScores = self.calculateScores(self.roundAnswers)
 
-         # Afișarea scorurilor
+        # Afișarea scorurilor
         for teamName in self.mainApp.teamNames:
             scoreLayout = QHBoxLayout()
             scoreLayout.addStretch()
 
             score = roundScores.get(teamName, 0)
-            label = QLabel(f"{teamName}: Scor Runda: {score}, Total: {self.mainApp.totalScores[teamName]}")
+            if self.mainApp.roundType != 'champion':
+                label = QLabel(f"{teamName}: Scor Runda: {score}, Total: {self.mainApp.totalScores[teamName]}")
+            else:
+                label = QLabel(f"{teamName}: Scor Runda: {score}, Total: {self.mainApp.championScores[teamName]}")
             label.setAlignment(Qt.AlignCenter)
             scoreLayout.addWidget(label)
 
@@ -100,6 +104,21 @@ class ScoreWindow(QWidget):
                 self.mainApp.totalScores[team] += score  # Actualizăm scorul total
 
             return roundScores
+    
+        elif self.mainApp.roundType == 'champion':
+            roundScores = {}
+            for team, correct in roundAnswers.items():
+                if correct:
+                    score = 50
+                else:
+                    score = 0
+                roundScores[team] = score
+                self.mainApp.championScores[team] += score  # Actualizăm scorul total
+            return roundScores
+    
+        else:
+            QMessageBox.critical(None, "Eroare", "Runda curentă nu este validă!")
+            return None
 
     def onContinue(self):
         self.close()  # Închidem fereastra curentă de scoruri
@@ -108,37 +127,48 @@ class ScoreWindow(QWidget):
         if self.mainApp.roundType == 'classic':
             if self.mainApp.numClassicRounds > 0:
                 # Dacă mai sunt runde clasice, afișăm ecranul de selecție categorie
+                print('A. Score - branch classic - numClassicRounds > 0')
                 self.mainApp.showNextScreen()
             elif self.mainApp.numThiefRounds > 0:
                 # Dacă s-au terminat rundele clasice, dar mai sunt runde de duel
                 self.mainApp.roundType = 'thief'  # Schimbăm tipul rundei în 'thief'
                 self.mainApp.duelTransitionWindow = DuelTransitionWindow(self.mainApp)
+                print('B. Score - branch classic - numThiefRounds > 0')
                 self.mainApp.duelTransitionWindow.show()  # Afișăm ecranul de tranziție către duel
             elif self.mainApp.numChampionRounds > 0:
                 # Dacă nu mai sunt nici runde clasice, nici de duel, dar sunt runde de campioni
                 self.mainApp.roundType = 'champion'  # Schimbăm tipul rundei în 'champion'
-                self.mainApp.showNextScreen()  # Afișăm ecranul de selecție categorie pentru campioni
+                print('C. Score - branch classic - numChampionRounds > 0')
+                self.mainApp.championTransitionWindow = ChampionTransitionWindow(self.mainApp)
+                self.mainApp.championTransitionWindow.show()  # Afișăm ecranul de tranziție către campioni
             else:
                 # Dacă nu mai sunt runde de niciun tip, jocul se termină
+                print('D. Score - branch classic - END GAME')
                 self.mainApp.endGame()
 
         elif self.mainApp.roundType == 'thief':
             if self.mainApp.numThiefRounds > 0:
                 # Dacă mai sunt runde de duel, continuăm cu duelurile
+                print('E. Score - branch thief - numThiefRounds > 0')
                 self.mainApp.showNextScreen()
             elif self.mainApp.numChampionRounds > 0:
                 # Dacă s-au terminat rundele de duel, dar sunt runde de campioni
+                print('F. Score - branch thief - numChampionRounds > 0')
                 self.mainApp.roundType = 'champion'
-                self.mainApp.showNextScreen()
+                self.mainApp.championTransitionWindow = ChampionTransitionWindow(self.mainApp)
+                self.mainApp.championTransitionWindow.show()
             else:
                 # Dacă nu mai sunt runde de duel sau campioni, jocul se termină
+                print('G. Score - branch thief - END GAME')
                 self.mainApp.endGame()
 
         elif self.mainApp.roundType == 'champion':
             if self.mainApp.numChampionRounds > 0:
                 # Dacă mai sunt runde de campioni, continuăm cu acestea
+                print('H. Score - branch champion - numChampionRounds > 0')
                 self.mainApp.showNextScreen()
             else:
                 # Dacă nu mai sunt runde de campioni, jocul se termină
+                print('I. Score - branch champion - END GAME')
                 self.mainApp.endGame()
 

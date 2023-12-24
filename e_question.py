@@ -26,14 +26,19 @@ class QuestionWindow(QWidget):
             layout.addWidget(currentTeamLabel)
         elif self.mainApp.roundType == 'thief':
             # Afișarea echipei de rând
-            currentTeamLabel = QLabel(f"{self.mainApp.currentTeamName} >>> {self.mainApp.selectedOpponent}")
+            currentTeamLabel = QLabel(f"{self.mainApp.currentTeamName}  >>>  {self.mainApp.selectedOpponent}")
+            currentTeamLabel.setAlignment(Qt.AlignCenter)
+            layout.addWidget(currentTeamLabel)
+        elif self.mainApp.roundType == 'champion':
+            # Afișarea echipei de rând
+            currentTeamLabel = QLabel(f"{self.mainApp.championTeams[0]}  x  {self.mainApp.championTeams[1]}")
             currentTeamLabel.setAlignment(Qt.AlignCenter)
             layout.addWidget(currentTeamLabel)
         else:
             QMessageBox.warning(self, 'Eroare', 'Tipul rundei nu este găsit.')
         
         # Afișarea categoriei
-        currentTeamLabel = QLabel(f"Categoria întrebării: {self.mainApp.selectedCategory}")
+        currentTeamLabel = QLabel(f"Categoria întrebării: {self.question['categorie']}")
         currentTeamLabel.setAlignment(Qt.AlignCenter)
         layout.addWidget(currentTeamLabel)
 
@@ -60,25 +65,46 @@ class QuestionWindow(QWidget):
         layout.addWidget(self.timer)
         self.startTimer()
 
-        # Răspunsuri echipe
-        for team in self.mainApp.teamNames:
-            teamLabel = QLabel(f"Răspunsuri echipa {team}")
-            teamLabel.setAlignment(Qt.AlignCenter)
-            layout.addWidget(teamLabel)
+        if self.mainApp.roundType != 'champion':
+            # Răspunsuri echipe
+            for team in self.mainApp.teamNames:
+                teamLabel = QLabel(f"Răspunsuri echipa {team}")
+                teamLabel.setAlignment(Qt.AlignCenter)
+                layout.addWidget(teamLabel)
 
-            teamAnswerLayout = QHBoxLayout()
-            teamAnswerLayout.addStretch()
-            teamRadioButtonGroup = QButtonGroup(self)
-            for option in letters:
-                radioButton = QRadioButton(option)
-                teamAnswerLayout.addWidget(radioButton)
-                teamRadioButtonGroup.addButton(radioButton)
-            teamAnswerLayout.addStretch()
+                teamAnswerLayout = QHBoxLayout()
+                teamAnswerLayout.addStretch()
+                teamRadioButtonGroup = QButtonGroup(self)
+                for option in letters:
+                    radioButton = QRadioButton(option)
+                    teamAnswerLayout.addWidget(radioButton)
+                    teamRadioButtonGroup.addButton(radioButton)
+                teamAnswerLayout.addStretch()
 
-            self.teamAnswersWidgets.append((team, teamRadioButtonGroup))
-            layout.addLayout(teamAnswerLayout)
+                self.teamAnswersWidgets.append((team, teamRadioButtonGroup))
+                layout.addLayout(teamAnswerLayout)
+        elif self.mainApp.roundType == 'champion':
+            # Răspunsuri echipe
+            for team in self.mainApp.championTeams:
+                teamLabel = QLabel(f"Răspunsuri echipa {team}")
+                teamLabel.setAlignment(Qt.AlignCenter)
+                layout.addWidget(teamLabel)
 
-       # Creare QHBoxLayout pentru alinierea butonului de verificare pe orizontală
+                teamAnswerLayout = QHBoxLayout()
+                teamAnswerLayout.addStretch()
+                teamRadioButtonGroup = QButtonGroup(self)
+                for option in letters:
+                    radioButton = QRadioButton(option)
+                    teamAnswerLayout.addWidget(radioButton)
+                    teamRadioButtonGroup.addButton(radioButton)
+                teamAnswerLayout.addStretch()
+
+                self.teamAnswersWidgets.append((team, teamRadioButtonGroup))
+                layout.addLayout(teamAnswerLayout)
+        else:
+            QMessageBox.warning(self, 'Eroare (question)', 'Tipul rundei nu este găsit.')
+
+        # Creare QHBoxLayout pentru alinierea butonului de verificare pe orizontală
         answerButtonLayout = QHBoxLayout()
         answerButtonLayout.addStretch()  # Adaugă un spațiu elastic înainte de buton pentru a-l împinge către centru
 
@@ -119,6 +145,11 @@ class QuestionWindow(QWidget):
         self.timerQTimer.stop()
         self.hideInitialAnswers()
         
+        # Actualizăm numărul total de întrebări pentru fiecare echipă
+        for team in self.mainApp.teamNames:
+            if self.question['categorie'] != "Departajare":
+                self.mainApp.totalQuestionCounts[team] += 1
+        
         if self.mainApp.roundType == 'classic':
             roundAnswers = {}
             for team, teamRadioButtonGroup in self.teamAnswersWidgets:
@@ -128,13 +159,16 @@ class QuestionWindow(QWidget):
                     selectedAnswer = self.answerMapping[selectedLetter]
                     correct = selectedAnswer == self.question['răspuns corect']
                     roundAnswers[team] = correct
+                # Actualizăm numărul de răspunsuri corecte pentru fiecare echipă
+                if correct:
+                    self.mainApp.correctAnswersCount[team] += 1
             
             # Afișăm scorurile
             self.scoreWindow = ScoreWindow(self.mainApp, roundAnswers)
             self.close()
             self.scoreWindow.show()
             
-        elif self.mainApp.roundType == 'thief':
+        elif self.mainApp.roundType == 'thief' or self.mainApp.roundType == 'champion':
             roundAnswers = {}
             for team, teamRadioButtonGroup in self.teamAnswersWidgets:
                 selectedButton = teamRadioButtonGroup.checkedButton()
@@ -143,6 +177,9 @@ class QuestionWindow(QWidget):
                     selectedAnswer = self.answerMapping[selectedLetter]
                     correct = selectedAnswer == self.question['răspuns corect']
                     roundAnswers[team] = correct
+                # Actualizăm numărul de răspunsuri corecte pentru fiecare echipă
+                if correct:
+                    self.mainApp.correctAnswersCount[team] += 1
             
             if self.mainApp.selectedOpponent in roundAnswers and self.mainApp.currentTeamName in roundAnswers:
                 if roundAnswers[self.mainApp.selectedOpponent] is True and roundAnswers[self.mainApp.currentTeamName] is True:

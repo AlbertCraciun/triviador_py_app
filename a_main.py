@@ -1,10 +1,12 @@
+from datetime import datetime
+import datetime
 import sys
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from d_selection import CategorySelectionWindow
-from g_duel_start import DuelTransitionWindow
 from b_questions_loader import load_questions_from_excel
 
 from c_start_window import StartWindow
+from j_end_game import EndGameWindow
 
 class MainApp(QApplication):
         
@@ -13,6 +15,7 @@ class MainApp(QApplication):
         
         self.categorySelectionWindow = None
         self.duelTransitionWindow = None
+        self.championTransitionWindow = None
         
         self.teamNames = []
         self.timerDuration = 30
@@ -70,12 +73,27 @@ class MainApp(QApplication):
         self.selected_question = []
         
         self.randomQuestion = False
-        self.totalScores = {}
         self.roundType = "classic"
         self.selectedOpponent = None
         self.selectedCategory = None
+        
+        # Inițializăm dicționare pentru contorizari
+        self.tiebreakerCounts = {}
+        self.totalQuestionCounts = {}
+        self.correctAnswersCount = {}
+        self.championScores = {}
+        self.totalScores = {}
+        self.championTeams = []  # Echipele care participă la rundele de campioni
 
     def showNextScreen(self):
+        
+        if self.duelTransitionWindow is not None:
+            self.duelTransitionWindow.close()
+            self.duelTransitionWindow = None
+            
+        if self.championTransitionWindow is not None:
+            self.championTransitionWindow.close()
+            self.championTransitionWindow = None
 
         if self.teamNames:
             self.randomQuestion = False
@@ -109,9 +127,35 @@ class MainApp(QApplication):
         self.questions = load_questions_from_excel(filePath)
         
     def endGame(self):
-        # Afișează un mesaj de felicitare sau un ecran final
-        QMessageBox.information(None, "Joc Terminat", "Felicitări tuturor echipelor pentru participare!")
-        self.quit()  # Încheie aplicația
+        # Scrierea scorurilor în fișier
+        self.saveScoresToFile()
+
+        # Afișarea ferestrei de final de joc
+        self.endGameWindow = EndGameWindow(self)
+        self.endGameWindow.show()
+        
+    def saveScoresToFile(self):
+        filename = f"scoruri_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+        with open(filename, 'w', encoding='utf-8') as file:
+            file.write('Scoruri finale\n')
+            file.write(f'Total runde jucate: {self.numClassicRounds + self.numThiefRounds + self.numChampionRounds}\n')
+            file.write('-------------------\n')
+
+            for team in sorted(self.totalScores.keys(), key=lambda t: self.totalScores[t], reverse=True):
+                score = self.totalScores[team]
+                totalQuestions = self.totalQuestionCounts[team]
+                correctAnswers = self.correctAnswersCount[team]
+                tiebreakerQuestions = self.tiebreakerCounts[team]
+                file.write(f'Echipa: {team}\n')
+                file.write(f'Scor: {score}\n')
+                file.write(f'Număr total întrebări: {totalQuestions}\n')
+                file.write(f'Răspunsuri corecte: {correctAnswers}\n')
+                file.write(f'Întrebări de departajare: {tiebreakerQuestions}\n')
+                file.write('-------------------\n')
+
+            file.write('Joc terminat.\n')
+
+        print(f"Scorurile au fost salvate în fișierul: {filename}")
 
 if __name__ == '__main__':
     app = MainApp(sys.argv)

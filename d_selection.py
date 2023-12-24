@@ -36,26 +36,26 @@ class CategorySelectionWindow(QWidget):
             self.opponentTeamSelector.setFixedWidth(300)
             layout.addWidget(self.opponentTeamSelector, 0, Qt.AlignCenter)
         
-        # Creare QHBoxLayout pentru alinierea butoanelor pe orizontală
-        buttonLayout = QVBoxLayout()
-        buttonLayout.addStretch()  # Adaugă un spațiu elastic înainte de buton pentru a-l împinge către centru
+        if self.mainApp.roundType != 'champion':
+            # Creare QHBoxLayout pentru alinierea butoanelor pe orizontală
+            buttonLayout = QVBoxLayout()
+            buttonLayout.addStretch()  # Adaugă un spațiu elastic înainte de buton pentru a-l împinge către centru
 
-        # Adăugare butoane categorie în layout-ul orizontal
-        for category in self.mainApp.categories:
-            btn = QPushButton(category, self)
-            btn.setFixedWidth(300)  # Setează lățimea fixă a butonului
-            buttonLayout.addWidget(btn, 0, Qt.AlignCenter)  # Aliniază butonul pe centrul orizontal
-            btn.clicked.connect(lambda _, c=category: self.onCategorySelected(c))
+            # Adăugare butoane categorie în layout-ul orizontal
+            for category in self.mainApp.categories:
+                btn = QPushButton(category, self)
+                btn.setFixedWidth(300)  # Setează lățimea fixă a butonului
+                buttonLayout.addWidget(btn, 0, Qt.AlignCenter)  # Aliniază butonul pe centrul orizontal
+                btn.clicked.connect(lambda _, c=category: self.onCategorySelected(c))
 
-        buttonLayout.addStretch()  # Adaugă un spațiu elastic după buton pentru a menține centrarea
-        layout.addLayout(buttonLayout)  # Adaugă layout-ul orizontal în layout-ul vertical principal
-
+            buttonLayout.addStretch()  # Adaugă un spațiu elastic după buton pentru a menține centrarea
+            layout.addLayout(buttonLayout)  # Adaugă layout-ul orizontal în layout-ul vertical principal
+         
         # Timer
         self.timer = QLabel(f"Timp rămas: {self.mainApp.selectionTime} secunde")
         self.timer.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.timer)
-        if self.mainApp.selectionTime > 0:
-            self.startTimer()
+        self.startTimer()
 
         # Adaugă un spațiu după widgeturi pentru a le centra
         layout.addStretch()
@@ -66,7 +66,7 @@ class CategorySelectionWindow(QWidget):
 
     def startTimer(self):
         # Implementați logica pentru timer aici
-        self.countdown = self.mainApp.categorySelectionTime
+        self.countdown = self.mainApp.selectionTime
         self.timerQTimer = QTimer(self)
         self.timerQTimer.timeout.connect(self.updateTimer)
         self.timerQTimer.start(1000)
@@ -91,7 +91,7 @@ class CategorySelectionWindow(QWidget):
             QMessageBox.warning(self, 'Eroare', 'Nu mai există întrebări!')
             return
         
-        if category == "Aleator":
+        if category == "Aleator" or self.mainApp.roundType == 'champion':
             # Excludem întrebările de departajare pentru selecția aleatorie
             nonTiebreakerQuestions = [q for q in self.mainApp.questions if q['categorie'] != "Departajare"]
             if len(nonTiebreakerQuestions) == 0:
@@ -100,7 +100,7 @@ class CategorySelectionWindow(QWidget):
             question = random.choice(nonTiebreakerQuestions)
             self.mainApp.randomQuestion = True
         else:
-            # Excludem întrebările de departajare și pentru celelalte categorii
+            # cautam o intrebare din categoria selectata
             possible_questions = [q for q in self.mainApp.questions if q['categorie'] == category and q['categorie'] != "Departajare"]
             question = random.choice(possible_questions) if possible_questions else None
 
