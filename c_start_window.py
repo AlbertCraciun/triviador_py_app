@@ -225,9 +225,9 @@ class StartWindow(QWidget):
         self.mainApp.teamNames = teamNames
         self.mainApp.timerDuration = self.responseTime.value()
         self.mainApp.categorySelectionTime = self.categorySelectionTime.value()
-        self.mainApp.numClassicRounds = self.numClassicRounds.value() + 1
-        self.mainApp.numThiefRounds = self.numThiefRounds.value() + 1
-        self.mainApp.numChampionRounds = self.numChampionRounds.value() + 1
+        self.mainApp.numClassicRounds = self.numClassicRounds.value()
+        self.mainApp.numThiefRounds = self.numThiefRounds.value()
+        self.mainApp.numChampionRounds = self.numChampionRounds.value()
         self.close()
         self.mainApp.showNextScreen()  # Metodă pentru a afișa ecranul următor  
 
