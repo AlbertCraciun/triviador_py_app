@@ -1,9 +1,7 @@
 import sys
-from PyQt5.QtWidgets import QApplication
-from d_category_selection import CategorySelectionWindow
+from PyQt5.QtWidgets import QApplication, QMessageBox
+from d_selection import CategorySelectionWindow
 from g_duel_start import DuelTransitionWindow
-from h_duel_selection import DuelSelectionWindow
-from e_question_window import QuestionWindow
 from b_questions_loader import load_questions_from_excel
 
 from c_start_window import StartWindow
@@ -12,9 +10,13 @@ class MainApp(QApplication):
         
     def __init__(self, sys_argv):
         super().__init__(sys_argv)
+        
+        self.categorySelectionWindow = None
+        self.duelTransitionWindow = None
+        
         self.teamNames = []
         self.timerDuration = 30
-        self.categorySelectionTime = 30
+        self.selectionTime = 30
         self.numClassicRounds = 0
         self.numThiefRounds = 0
         self.numChampionRounds = 0
@@ -63,66 +65,52 @@ class MainApp(QApplication):
         self.currentTeamIndex = -1
         self.currentTeamName = self.teamNames[self.currentTeamIndex] if self.teamNames else None
         
+        self.categories = set()
         self.questions = []
         self.selected_question = []
         
         self.randomQuestion = False
         self.totalScores = {}
-        self.roundType = "Classic"
-        self.passedRounds = 0
+        self.roundType = "classic"
+        self.selectedOpponent = None
+        self.selectedCategory = None
 
     def showNextScreen(self):
-        self.nextTeam()
-        self.categorySelectionWindow = CategorySelectionWindow(self)
-        self.startWindow.hide()  # Ascundem fereastra de start
-        self.categorySelectionWindow.show()  # Afișăm fereastra de selecție a categoriilor
-        
-    def showQuestionScreen(self, question, answers):
-        self.questionWindow = QuestionWindow(self, question, answers, teams=self.teamNames)
-        self.questionWindow.show()
 
-    def nextTeam(self):
         if self.teamNames:
             self.randomQuestion = False
             self.currentTeamIndex = (self.currentTeamIndex + 1) % len(self.teamNames)
             self.currentTeamName = self.teamNames[self.currentTeamIndex]
-            self.passedRounds += 1
-
-            # Verificăm dacă s-au terminat rundele clasice
-            if self.passedRounds > self.numClassicRounds:
-                # Dacă există runde de duel, le începem
-                if self.numThiefRounds > 0 and self.roundType == "Classic":
-                    self.roundType = "Thief"
-                    self.numThiefRounds -= 1
-                    self.startDuel()
-                # Dacă nu mai sunt runde de duel, trecem la runde de campioni, dacă sunt specificate
-                elif self.numChampionRounds > 0 and self.roundType != "Champion":
-                    self.roundType = "Champion"
-                    self.numChampionRounds -= 1
-                    # TODO: Implementați logica pentru a începe runda de campioni
-                # Dacă nu mai sunt nici runde de duel, nici de campioni, jocul se termină
-                else:
-                    # TODO: Implementați logica pentru a încheia jocul
-                    pass
+                
+            if self.roundType == "classic":
+                self.numClassicRounds -= 1
+                print("\n--Echipa curentă: ", self.currentTeamName, "\nRunda curentă: ", self.roundType, "\nRunde clasice rămase: ", self.numClassicRounds, "\nRunde de duel rămase: ", self.numThiefRounds, "\nRunde de campioni rămase: ", self.numChampionRounds)
+                self.categorySelectionWindow = CategorySelectionWindow(self)
+                self.categorySelectionWindow.show() # Afișăm fereastra de selecție a categoriilor
+            elif self.roundType == "thief":
+                self.numThiefRounds -= 1
+                print("\n--Echipa curentă: ", self.currentTeamName, "\nRunda curentă: ", self.roundType, "\nRunde clasice rămase: ", self.numClassicRounds, "\nRunde de duel rămase: ", self.numThiefRounds, "\nRunde de campioni rămase: ", self.numChampionRounds)
+                self.categorySelectionWindow = CategorySelectionWindow(self)
+                self.categorySelectionWindow.show() # Afișăm fereastra de selecție a categoriilor
+            elif self.roundType == "champion":
+                self.numChampionRounds -= 1
+                print("\n--Echipa curentă: ", self.currentTeamName, "\nRunda curentă: ", self.roundType, "\nRunde clasice rămase: ", self.numClassicRounds, "\nRunde de duel rămase: ", self.numThiefRounds, "\nRunde de campioni rămase: ", self.numChampionRounds)
+                self.categorySelectionWindow = CategorySelectionWindow(self)
+                self.categorySelectionWindow.show()
+            else:
+                QMessageBox.critical(None, "Eroare", "Runda curentă nu este validă!")
+                
+        else:
+            QMessageBox.critical(None, "Eroare", "Nu există echipe!")
+            print("Nu există echipe!")
     
     def loadQuestions(self, filePath):
         # Încărcați întrebările din fișierul Excel specificat
         self.questions = load_questions_from_excel(filePath)
         
-    def startDuel(self):
-        # Afișăm fereastra de tranziție către duel
-        self.duelTransitionWindow = DuelTransitionWindow(self)
-        self.duelTransitionWindow.show()
-
-    def initiateDuel(self, opponent, category):
-        # Logica pentru inițierea duelului
-        self.selectedOpponent = opponent
-        self.selectedCategory = category
-        # TODO: ... cod pentru a începe duelul, cum ar fi afișarea unei întrebări ...
-        
     def endGame(self):
         # Afișează un mesaj de felicitare sau un ecran final
-        # QMessageBox.information(None, "Joc Terminat", "Felicitări tuturor echipelor pentru participare!")
+        QMessageBox.information(None, "Joc Terminat", "Felicitări tuturor echipelor pentru participare!")
         self.quit()  # Încheie aplicația
 
 if __name__ == '__main__':

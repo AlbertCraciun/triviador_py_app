@@ -1,13 +1,14 @@
 import random
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QMessageBox, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QMessageBox, QHBoxLayout, QComboBox, QGridLayout, QVBoxLayout
 from PyQt5.QtCore import QTimer, Qt
 
-from e_question_window import QuestionWindow
+from e_question import QuestionWindow
 
 class CategorySelectionWindow(QWidget):
     def __init__(self, mainApp):
         super().__init__()
         self.mainApp = mainApp
+        self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.initUI()
 
     def initUI(self):
@@ -21,18 +22,26 @@ class CategorySelectionWindow(QWidget):
         currentTeamLabel.setAlignment(Qt.AlignCenter)
         layout.addWidget(currentTeamLabel)
 
-        self.categories = set()
-        for question in self.mainApp.questions:
-            if question['categorie'] != "Departajare":
-                self.categories.add(question['categorie'])
-        self.categories.add("Aleator")
+        if self.mainApp.roundType == 'thief':
+            titleLabel = QLabel("Selectează echipa adversă și categoria")
+            titleLabel.setAlignment(Qt.AlignCenter)
+            layout.addWidget(titleLabel)
 
+            # Selector pentru echipa adversă
+            self.opponentTeamSelector = QComboBox(self)
+            for team in self.mainApp.teamNames:
+                if team != self.mainApp.currentTeamName:
+                    self.opponentTeamSelector.addItem(team)
+            self.opponentTeamSelector.setCurrentIndex(0)
+            self.opponentTeamSelector.setFixedWidth(300)
+            layout.addWidget(self.opponentTeamSelector, 0, Qt.AlignCenter)
+        
         # Creare QHBoxLayout pentru alinierea butoanelor pe orizontală
-        buttonLayout = QHBoxLayout()
+        buttonLayout = QVBoxLayout()
         buttonLayout.addStretch()  # Adaugă un spațiu elastic înainte de buton pentru a-l împinge către centru
 
         # Adăugare butoane categorie în layout-ul orizontal
-        for category in self.categories:
+        for category in self.mainApp.categories:
             btn = QPushButton(category, self)
             btn.setFixedWidth(300)  # Setează lățimea fixă a butonului
             buttonLayout.addWidget(btn, 0, Qt.AlignCenter)  # Aliniază butonul pe centrul orizontal
@@ -42,10 +51,10 @@ class CategorySelectionWindow(QWidget):
         layout.addLayout(buttonLayout)  # Adaugă layout-ul orizontal în layout-ul vertical principal
 
         # Timer
-        self.timer = QLabel("Timp rămas: 30 secunde", self)
+        self.timer = QLabel(f"Timp rămas: {self.mainApp.selectionTime} secunde")
         self.timer.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.timer)
-        if self.mainApp.categorySelectionTime > 0:
+        if self.mainApp.selectionTime > 0:
             self.startTimer()
 
         # Adaugă un spațiu după widgeturi pentru a le centra
@@ -76,6 +85,7 @@ class CategorySelectionWindow(QWidget):
         self.timerQTimer.stop()
         # Implementați logica pentru atunci când o categorie este selectată
         print(f"Categoria selectată: {category}")
+        self.mainApp.selectedCategory = category
         
         if len(self.mainApp.questions) == 0:
             QMessageBox.warning(self, 'Eroare', 'Nu mai există întrebări!')
@@ -98,9 +108,13 @@ class CategorySelectionWindow(QWidget):
             self.mainApp.selectedQuestion = question
             self.mainApp.questions.remove(question)  # Eliminăm întrebarea selectată din listă
 
+            if self.mainApp.roundType == 'thief':
+                self.mainApp.selectedOpponent = self.opponentTeamSelector.currentText()
+            
             # Afișăm fereastra cu întrebarea
-            self.questionWindow = QuestionWindow(self.mainApp, question, teams=self.mainApp.teamNames)
-            self.hide()  # Ascundem fereastra de selecție a categoriilor
+            self.mainApp.selectedCategory = category
+            self.questionWindow = QuestionWindow(self.mainApp, question)
+            self.close()
             self.questionWindow.show()
         else:
             QMessageBox.warning(self, 'Eroare', 'Nu există întrebări pentru categoria selectată.')

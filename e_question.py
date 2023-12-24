@@ -1,15 +1,16 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QRadioButton, QPushButton, QHBoxLayout, QButtonGroup
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QRadioButton, QPushButton, QHBoxLayout, QButtonGroup, QMessageBox
 from PyQt5.QtCore import QTimer, Qt
 
-from f_score_window import ScoreWindow
+from f_score import ScoreWindow
+from h_duel_tiebreaker import TiebreakerWindow
 
 class QuestionWindow(QWidget):
-    def __init__(self, mainApp, question, teams):
+    def __init__(self, mainApp, question):
         super().__init__()
         self.mainApp = mainApp
         self.question = question
-        self.teams = teams  # Lista de echipe
         self.teamAnswersWidgets = []  # Pentru stocarea widgeturilor specifice fiecărei echipe
+        self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.initUI()
 
     def initUI(self):
@@ -18,8 +19,21 @@ class QuestionWindow(QWidget):
         # Adaugă un spațiu înainte de widgeturi pentru a le împinge în jos
         layout.addStretch()
 
-        # Afișarea echipei de rând
-        currentTeamLabel = QLabel(f"Rândul echipei: {self.mainApp.currentTeamName}")
+        if self.mainApp.roundType == 'classic':
+            # Afișarea echipei de rând
+            currentTeamLabel = QLabel(f"Rândul echipei: {self.mainApp.currentTeamName}")
+            currentTeamLabel.setAlignment(Qt.AlignCenter)
+            layout.addWidget(currentTeamLabel)
+        elif self.mainApp.roundType == 'thief':
+            # Afișarea echipei de rând
+            currentTeamLabel = QLabel(f"{self.mainApp.currentTeamName} >>> {self.mainApp.selectedOpponent}")
+            currentTeamLabel.setAlignment(Qt.AlignCenter)
+            layout.addWidget(currentTeamLabel)
+        else:
+            QMessageBox.warning(self, 'Eroare', 'Tipul rundei nu este găsit.')
+        
+        # Afișarea categoriei
+        currentTeamLabel = QLabel(f"Categoria întrebării: {self.mainApp.selectedCategory}")
         currentTeamLabel.setAlignment(Qt.AlignCenter)
         layout.addWidget(currentTeamLabel)
 
@@ -47,7 +61,7 @@ class QuestionWindow(QWidget):
         self.startTimer()
 
         # Răspunsuri echipe
-        for team in self.teams:
+        for team in self.mainApp.teamNames:
             teamLabel = QLabel(f"Răspunsuri echipa {team}")
             teamLabel.setAlignment(Qt.AlignCenter)
             layout.addWidget(teamLabel)
@@ -81,7 +95,7 @@ class QuestionWindow(QWidget):
         layout.addStretch()
 
         self.setLayout(layout)
-        self.setWindowTitle("Întrebarea")
+        self.setWindowTitle("Întrebare")
         self.setGeometry(300, 300, 400, 300)
 
     def startTimer(self):
@@ -104,16 +118,42 @@ class QuestionWindow(QWidget):
     def checkTeamAnswers(self):
         self.timerQTimer.stop()
         self.hideInitialAnswers()
-        roundAns = {}
-        for team, teamRadioButtonGroup in self.teamAnswersWidgets:
-            selectedButton = teamRadioButtonGroup.checkedButton()
-            if selectedButton:
-                selectedLetter = selectedButton.text()
-                selectedAnswer = self.answerMapping[selectedLetter]
-                correct = selectedAnswer == self.question['răspuns corect']
-                roundAns[team] = correct
         
-        # Afișăm scorurile
-        self.scoreWindow = ScoreWindow(self.mainApp, roundAns)
-        self.hide()
-        self.scoreWindow.show()
+        if self.mainApp.roundType == 'classic':
+            roundAnswers = {}
+            for team, teamRadioButtonGroup in self.teamAnswersWidgets:
+                selectedButton = teamRadioButtonGroup.checkedButton()
+                if selectedButton:
+                    selectedLetter = selectedButton.text()
+                    selectedAnswer = self.answerMapping[selectedLetter]
+                    correct = selectedAnswer == self.question['răspuns corect']
+                    roundAnswers[team] = correct
+            
+            # Afișăm scorurile
+            self.scoreWindow = ScoreWindow(self.mainApp, roundAnswers)
+            self.close()
+            self.scoreWindow.show()
+            
+        elif self.mainApp.roundType == 'thief':
+            roundAnswers = {}
+            for team, teamRadioButtonGroup in self.teamAnswersWidgets:
+                selectedButton = teamRadioButtonGroup.checkedButton()
+                if selectedButton:
+                    selectedLetter = selectedButton.text()
+                    selectedAnswer = self.answerMapping[selectedLetter]
+                    correct = selectedAnswer == self.question['răspuns corect']
+                    roundAnswers[team] = correct
+            
+            if self.mainApp.selectedOpponent in roundAnswers and self.mainApp.currentTeamName in roundAnswers:
+                if roundAnswers[self.mainApp.selectedOpponent] is True and roundAnswers[self.mainApp.currentTeamName] is True:
+                    # Ambii participanți au răspuns corect, deci se inițiază departajarea
+                    self.tiebreakerWindow = TiebreakerWindow(self.mainApp, roundAnswers)
+                    self.close()
+                    self.tiebreakerWindow.show()            
+                else:
+                    self.scoreWindow = ScoreWindow(self.mainApp, roundAnswers)
+                    self.close()
+                    self.scoreWindow.show()
+            
+            else:
+                QMessageBox.warning(self, 'Eroare', 'Nu s-a găsit răspunsul echipei.')

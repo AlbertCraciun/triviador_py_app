@@ -8,6 +8,7 @@ class StartWindow(QWidget):
         super().__init__()
         self.mainApp = mainApp
         self.teamInputs = []  # Lista pentru a stoca câmpurile de intrare pentru echipe
+        self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.initUI()
 
     def initUI(self):
@@ -178,12 +179,23 @@ class StartWindow(QWidget):
         self.setGeometry(300, 300, 400, 300)
         
     def updateRoundSpinners(self):
-        # Actualizăm pasul de incrementare pentru spinbox-uri
+        # Obținem numărul de echipe adăugate
         teamCount = len([input for input in self.teamInputs if input.isVisible() and input.text()])
+
         if teamCount > 0:
+            # Setăm numărul minim de runde clasice ca fiind egal cu numărul de echipe
+            self.numClassicRounds.setMinimum(teamCount)
+            # Dacă valoarea curentă este mai mică decât numărul minim, o actualizăm
+            if self.numClassicRounds.value() < teamCount:
+                self.numClassicRounds.setValue(teamCount)
+
+            # Actualizăm pasul de incrementare pentru spinbox-uri
             self.numClassicRounds.setSingleStep(teamCount)
             self.numThiefRounds.setSingleStep(teamCount)
         else:
+            # Dacă nu există echipe, resetăm la valorile implicite
+            self.numClassicRounds.setMinimum(0)
+            self.numClassicRounds.setValue(0)
             self.numClassicRounds.setSingleStep(1)
             self.numThiefRounds.setSingleStep(1)
         
@@ -213,11 +225,11 @@ class StartWindow(QWidget):
         self.mainApp.teamNames = teamNames
         self.mainApp.timerDuration = self.responseTime.value()
         self.mainApp.categorySelectionTime = self.categorySelectionTime.value()
-        self.mainApp.numClassicRounds = self.numClassicRounds.value()
-        self.mainApp.numThiefRounds = self.numThiefRounds.value()
-        self.mainApp.numChampionRounds = self.numChampionRounds.value()
-        self.mainApp.showNextScreen()  # Metodă pentru a afișa ecranul următor
-        
+        self.mainApp.numClassicRounds = self.numClassicRounds.value() + 1
+        self.mainApp.numThiefRounds = self.numThiefRounds.value() + 1
+        self.mainApp.numChampionRounds = self.numChampionRounds.value() + 1
+        self.close()
+        self.mainApp.showNextScreen()  # Metodă pentru a afișa ecranul următor  
 
     def addTeam(self):
         # Activăm câmpul următor pentru numele echipei
@@ -237,3 +249,7 @@ class StartWindow(QWidget):
         if fileName:
             self.mainApp.questions = load_questions_from_excel(fileName)
             self.filePickerButton.setText(fileName.split('/')[-1])
+            for question in self.mainApp.questions:
+                if question['categorie'] != "Departajare":
+                    self.mainApp.categories.add(question['categorie'])
+            self.mainApp.categories.add("Aleator")
