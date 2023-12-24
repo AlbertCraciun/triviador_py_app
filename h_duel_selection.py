@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QComboBox, QPushButton
+from PyQt5.QtCore import Qt
 
 class DuelSelectionWindow(QWidget):
     def __init__(self, mainApp):
@@ -8,7 +9,10 @@ class DuelSelectionWindow(QWidget):
 
     def initUI(self):
         layout = QVBoxLayout()
+        layout.addStretch()  # Adaugă spațiu pentru centrare verticală
+
         titleLabel = QLabel("Selectează Echipa Adversă și Categoria")
+        titleLabel.setAlignment(Qt.AlignCenter)
         layout.addWidget(titleLabel)
 
         # Selector pentru echipa adversă
@@ -16,18 +20,19 @@ class DuelSelectionWindow(QWidget):
         for team in self.mainApp.teamNames:
             if team != self.mainApp.currentTeamName:
                 self.opponentTeamSelector.addItem(team)
-        layout.addWidget(self.opponentTeamSelector)
+        layout.addWidget(self.opponentTeamSelector, 0, Qt.AlignCenter)
 
         # Selector pentru categorie
         self.categorySelector = QComboBox(self)
-        self.categorySelector.addItems(["Istorie", "Știință", "Artă", "Sport", "Geografie"])
-        layout.addWidget(self.categorySelector)
+        self.categorySelector.addItems(self.mainApp.getCategories())  # Presupunând că există o metodă getCategories
+        layout.addWidget(self.categorySelector, 0, Qt.AlignCenter)
 
         # Buton pentru confirmare
         confirmButton = QPushButton("Confirmă și Începe Duelul")
         confirmButton.clicked.connect(self.confirmDuel)
-        layout.addWidget(confirmButton)
+        layout.addWidget(confirmButton, 0, Qt.AlignCenter)
 
+        layout.addStretch()  # Adaugă spațiu pentru centrare verticală
         self.setLayout(layout)
         self.setWindowTitle("Selecție Duel")
         self.setGeometry(300, 300, 400, 300)
@@ -38,5 +43,3 @@ class DuelSelectionWindow(QWidget):
         selectedCategory = self.categorySelector.currentText()
         self.mainApp.initiateDuel(selectedOpponent, selectedCategory)
         self.hide()
-
-    # ... restul codului necesar ...

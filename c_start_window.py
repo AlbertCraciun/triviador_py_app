@@ -46,6 +46,7 @@ class StartWindow(QWidget):
 
             teamInput = QLineEdit(self)
             teamInput.setPlaceholderText(f'Numele echipei {i + 1}')
+            teamInput.setFixedWidth(buttonWidth)
             teamInput.setVisible(False)
             teamInput.textChanged.connect(self.updateRoundSpinners)
             self.teamInputs.append(teamInput)

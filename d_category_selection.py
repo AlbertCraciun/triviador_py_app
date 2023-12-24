@@ -1,6 +1,6 @@
 import random
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QMessageBox
-from PyQt5.QtCore import QTimer
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QMessageBox, QHBoxLayout
+from PyQt5.QtCore import QTimer, Qt
 
 from e_question_window import QuestionWindow
 
@@ -12,25 +12,44 @@ class CategorySelectionWindow(QWidget):
 
     def initUI(self):
         layout = QVBoxLayout()
-        
+
+        # Adaugă un spațiu înainte de widgeturi pentru a le împinge în jos
+        layout.addStretch()
+
         # Afișarea echipei de rând
         currentTeamLabel = QLabel(f"Rândul echipei: {self.mainApp.currentTeamName}")
+        currentTeamLabel.setAlignment(Qt.AlignCenter)
         layout.addWidget(currentTeamLabel)
 
-        # TODO: add categories from excell
-        self.categories = ["Istorie", "Știință", "Artă", "Sport", "Geografie", "Aleator"]
+        self.categories = set()
+        for question in self.mainApp.questions:
+            if question['categorie'] != "Departajare":
+                self.categories.add(question['categorie'])
+        self.categories.add("Aleator")
+
+        # Creare QHBoxLayout pentru alinierea butoanelor pe orizontală
+        buttonLayout = QHBoxLayout()
+        buttonLayout.addStretch()  # Adaugă un spațiu elastic înainte de buton pentru a-l împinge către centru
+
+        # Adăugare butoane categorie în layout-ul orizontal
         for category in self.categories:
             btn = QPushButton(category, self)
-            # Capturăm valoarea curentă a lui 'category' pentru fiecare buton
+            btn.setFixedWidth(300)  # Setează lățimea fixă a butonului
+            buttonLayout.addWidget(btn, 0, Qt.AlignCenter)  # Aliniază butonul pe centrul orizontal
             btn.clicked.connect(lambda _, c=category: self.onCategorySelected(c))
-            layout.addWidget(btn)
-            layout.addWidget(btn)
+
+        buttonLayout.addStretch()  # Adaugă un spațiu elastic după buton pentru a menține centrarea
+        layout.addLayout(buttonLayout)  # Adaugă layout-ul orizontal în layout-ul vertical principal
 
         # Timer
         self.timer = QLabel("Timp rămas: 30 secunde", self)
+        self.timer.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.timer)
         if self.mainApp.categorySelectionTime > 0:
             self.startTimer()
+
+        # Adaugă un spațiu după widgeturi pentru a le centra
+        layout.addStretch()
 
         self.setLayout(layout)
         self.setWindowTitle("Selectează Categoria")

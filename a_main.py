@@ -1,6 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication
 from d_category_selection import CategorySelectionWindow
+from g_duel_start import DuelTransitionWindow
 from h_duel_selection import DuelSelectionWindow
 from e_question_window import QuestionWindow
 from b_questions_loader import load_questions_from_excel
@@ -109,10 +110,20 @@ class MainApp(QApplication):
         self.questions = load_questions_from_excel(filePath)
         
     def startDuel(self):
-        # Logica pentru a începe o rundă de duel
-        self.duelSelectionWindow = DuelSelectionWindow(self)
-        self.hide()  # TODO: sau fereastra care trebuie ascunsă
-        self.duelSelectionWindow.show()
+        # Afișăm fereastra de tranziție către duel
+        self.duelTransitionWindow = DuelTransitionWindow(self)
+        self.duelTransitionWindow.show()
+
+    def initiateDuel(self, opponent, category):
+        # Logica pentru inițierea duelului
+        self.selectedOpponent = opponent
+        self.selectedCategory = category
+        # TODO: ... cod pentru a începe duelul, cum ar fi afișarea unei întrebări ...
+        
+    def endGame(self):
+        # Afișează un mesaj de felicitare sau un ecran final
+        # QMessageBox.information(None, "Joc Terminat", "Felicitări tuturor echipelor pentru participare!")
+        self.quit()  # Încheie aplicația
 
 if __name__ == '__main__':
     app = MainApp(sys.argv)
