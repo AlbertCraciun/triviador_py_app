@@ -146,9 +146,14 @@ class QuestionWindow(QWidget):
         self.hideInitialAnswers()
         
         # Actualizăm numărul total de întrebări pentru fiecare echipă
-        for team in self.mainApp.teamNames:
-            if self.question['categorie'] != "Departajare":
-                self.mainApp.totalQuestionCounts[team] += 1
+        if self.mainApp.roundType != 'champion':
+            for team in self.mainApp.teamNames:
+                if self.question['categorie'] != "Departajare":
+                    self.mainApp.totalQuestionCount[team] += 1
+        else: 
+            for team in self.mainApp.championTeams:
+                if self.question['categorie'] != "Departajare":
+                    self.mainApp.totalQuestionCount[team] += 1
         
         if self.mainApp.roundType == 'classic':
             roundAnswers = {}
@@ -168,7 +173,7 @@ class QuestionWindow(QWidget):
             self.close()
             self.scoreWindow.show()
             
-        elif self.mainApp.roundType == 'thief' or self.mainApp.roundType == 'champion':
+        elif self.mainApp.roundType == 'thief':
             roundAnswers = {}
             for team, teamRadioButtonGroup in self.teamAnswersWidgets:
                 selectedButton = teamRadioButtonGroup.checkedButton()
@@ -193,4 +198,33 @@ class QuestionWindow(QWidget):
                     self.scoreWindow.show()
             
             else:
+                print("Nu s-a găsit răspunsul echipei.")
+                QMessageBox.warning(self, 'Eroare', 'Nu s-a găsit răspunsul echipei.')
+        
+        elif self.mainApp.roundType == 'champion':
+            roundAnswers = {}
+            for team, teamRadioButtonGroup in self.teamAnswersWidgets:
+                selectedButton = teamRadioButtonGroup.checkedButton()
+                if selectedButton:
+                    selectedLetter = selectedButton.text()
+                    selectedAnswer = self.answerMapping[selectedLetter]
+                    correct = selectedAnswer == self.question['răspuns corect']
+                    roundAnswers[team] = correct
+                # Actualizăm numărul de răspunsuri corecte pentru fiecare echipă
+                if correct:
+                    self.mainApp.correctAnswersCount[team] += 1
+            
+            if self.mainApp.championTeams[0] in roundAnswers and self.mainApp.championTeams[1] in roundAnswers:
+                if roundAnswers[self.mainApp.championTeams[0]] is True and roundAnswers[self.mainApp.championTeams[1]] is True:
+                    # Ambii participanți au răspuns corect, deci se inițiază departajarea
+                    self.tiebreakerWindow = TiebreakerWindow(self.mainApp, roundAnswers)
+                    self.close()
+                    self.tiebreakerWindow.show()            
+                else:
+                    self.scoreWindow = ScoreWindow(self.mainApp, roundAnswers)
+                    self.close()
+                    self.scoreWindow.show()
+            
+            else:
+                print("Nu s-a găsit răspunsul echipei.")
                 QMessageBox.warning(self, 'Eroare', 'Nu s-a găsit răspunsul echipei.')

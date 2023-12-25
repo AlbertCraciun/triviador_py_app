@@ -211,8 +211,8 @@ class StartWindow(QWidget):
         if self.numClassicRounds.value() < len(teamNames) or self.numClassicRounds.value() % len(teamNames) != 0:
             QMessageBox.warning(self, 'Eroare', 'Introduceți un număr de runde multiplu de numărul de echipe!')
             return
-        if self.numThiefRounds.value() % 2 != 0:
-            QMessageBox.warning(self, 'Eroare', 'Introduceți un număr par de runde!')
+        if self.numThiefRounds.value() % len(teamNames) != 0:
+            QMessageBox.warning(self, 'Eroare', 'Introduceți un număr de runde multiplu de numărul de echipe!')
             return
         if len(self.mainApp.questions) == 0:
             QMessageBox.warning(self, 'Eroare', 'Nu ați selectat fișierul de întrebări!')
@@ -224,7 +224,7 @@ class StartWindow(QWidget):
         # Salvăm datele și trecem la ecranul următor
         self.mainApp.teamNames = teamNames
         self.mainApp.tiebreakerCounts = {teamName: 0 for teamName in teamNames}
-        self.mainApp.totalQuestionCounts = {teamName: 0 for teamName in teamNames}
+        self.mainApp.totalQuestionCount = {teamName: 0 for teamName in teamNames}
         self.mainApp.correctAnswersCount = {teamName: 0 for teamName in teamNames}
         self.mainApp.championScores = {teamName: 0 for teamName in teamNames}
         self.mainApp.totalScores = {teamName: 0 for teamName in teamNames}
@@ -233,6 +233,9 @@ class StartWindow(QWidget):
         self.mainApp.numClassicRounds = self.numClassicRounds.value()
         self.mainApp.numThiefRounds = self.numThiefRounds.value()
         self.mainApp.numChampionRounds = self.numChampionRounds.value()
+        self.mainApp.tempNumChampionRounds = self.numChampionRounds.value()
+        self.mainApp.tempNumThiefRounds = self.numThiefRounds.value()
+        self.mainApp.tempNumClassicRounds = self.numClassicRounds.value()
         self.close()
         self.mainApp.showNextScreen()  # Metodă pentru a afișa ecranul următor  
 
@@ -254,7 +257,14 @@ class StartWindow(QWidget):
         if fileName:
             self.mainApp.questions = load_questions_from_excel(fileName)
             self.filePickerButton.setText(fileName.split('/')[-1])
+            
+            # Resetăm lista de categorii
+            self.mainApp.categories = []
+
+            # Adăugăm categoriile din întrebările încărcate
             for question in self.mainApp.questions:
-                if question['categorie'] != "Departajare":
-                    self.mainApp.categories.add(question['categorie'])
-            self.mainApp.categories.add("Aleator")
+                if question['categorie'] != "Departajare" and question['categorie'] not in self.mainApp.categories:
+                    self.mainApp.categories.append(question['categorie'])
+
+            # Adăugăm "Aleator" la sfârșitul listei
+            self.mainApp.categories.append("Aleator")

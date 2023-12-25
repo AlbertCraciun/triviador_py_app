@@ -17,21 +17,31 @@ class ScoreWindow(QWidget):
         
         roundScores = self.calculateScores(self.roundAnswers)
 
-        # Afișarea scorurilor
-        for teamName in self.mainApp.teamNames:
-            scoreLayout = QHBoxLayout()
-            scoreLayout.addStretch()
+        if self.mainApp.roundType == 'classic' or self.mainApp.roundType == 'thief':
+            for teamName in self.mainApp.teamNames:
+                scoreLayout = QHBoxLayout()
+                scoreLayout.addStretch()
 
-            score = roundScores.get(teamName, 0)
-            if self.mainApp.roundType != 'champion':
+                score = roundScores.get(teamName, 0)
                 label = QLabel(f"{teamName}: Scor Runda: {score}, Total: {self.mainApp.totalScores[teamName]}")
-            else:
-                label = QLabel(f"{teamName}: Scor Runda: {score}, Total: {self.mainApp.championScores[teamName]}")
-            label.setAlignment(Qt.AlignCenter)
-            scoreLayout.addWidget(label)
+                label.setAlignment(Qt.AlignCenter)
+                scoreLayout.addWidget(label)
 
-            scoreLayout.addStretch()
-            layout.addLayout(scoreLayout)
+                scoreLayout.addStretch()
+                layout.addLayout(scoreLayout)
+        
+        if self.mainApp.roundType == 'champion':
+            for teamName in self.mainApp.championTeams:
+                scoreLayout = QHBoxLayout()
+                scoreLayout.addStretch()
+
+                score = roundScores.get(teamName, 0)
+                label = QLabel(f"{teamName}: Scor Runda: {score}, Total: {self.mainApp.championScores[teamName]}")
+                label.setAlignment(Qt.AlignCenter)
+                scoreLayout.addWidget(label)
+
+                scoreLayout.addStretch()
+                layout.addLayout(scoreLayout)
 
         # Buton pentru continuare
         continueBtnLayout = QHBoxLayout()

@@ -23,6 +23,9 @@ class MainApp(QApplication):
         self.numClassicRounds = 0
         self.numThiefRounds = 0
         self.numChampionRounds = 0
+        self.tempNumClassicRounds = 0
+        self.tempNumThiefRounds = 0
+        self.tempNumChampionRounds = 0
         self.startWindow = StartWindow(self)
         self.startWindow.show()
         self.championRoundsEnabled = False
@@ -61,7 +64,13 @@ class MainApp(QApplication):
             #     margin: 5px;
             # }
             QCheckBox {
-                spacing: 5px;
+                spacing: 10px;
+            }
+            QComboBox {
+                border: 1px solid #555;
+                border-radius: 5px;
+                padding: 5px;
+                margin: 5px;
             }
         """)
         
@@ -79,7 +88,7 @@ class MainApp(QApplication):
         
         # Inițializăm dicționare pentru contorizari
         self.tiebreakerCounts = {}
-        self.totalQuestionCounts = {}
+        self.totalQuestionCount = {}
         self.correctAnswersCount = {}
         self.championScores = {}
         self.totalScores = {}
@@ -138,16 +147,24 @@ class MainApp(QApplication):
         filename = f"scoruri_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
         with open(filename, 'w', encoding='utf-8') as file:
             file.write('Scoruri finale\n')
-            file.write(f'Total runde jucate: {self.numClassicRounds + self.numThiefRounds + self.numChampionRounds}\n')
+            file.write(f'Runde clasice: {self.tempNumClassicRounds}\n')
+            file.write(f'Runde de duel: {self.tempNumThiefRounds}\n')
+            file.write(f'Runde de campioni: {self.tempNumChampionRounds}\n')
             file.write('-------------------\n')
 
-            for team in sorted(self.totalScores.keys(), key=lambda t: self.totalScores[t], reverse=True):
+             # Sortăm echipele mai întâi după scorurile de campioni (daca există) și apoi după scorurile totale
+            sorted_teams = sorted(self.totalScores.keys(), key=lambda t: (self.championScores[t] > 0, self.totalScores[t]), reverse=True)
+
+            for team in sorted_teams:
                 score = self.totalScores[team]
-                totalQuestions = self.totalQuestionCounts[team]
+                totalQuestions = self.totalQuestionCount[team]
                 correctAnswers = self.correctAnswersCount[team]
                 tiebreakerQuestions = self.tiebreakerCounts[team]
+                championScore = self.championScores[team]
+
                 file.write(f'Echipa: {team}\n')
                 file.write(f'Scor: {score}\n')
+                file.write(f'Champion score: {championScore}\n')
                 file.write(f'Număr total întrebări: {totalQuestions}\n')
                 file.write(f'Răspunsuri corecte: {correctAnswers}\n')
                 file.write(f'Întrebări de departajare: {tiebreakerQuestions}\n')

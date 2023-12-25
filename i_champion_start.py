@@ -36,6 +36,7 @@ class ChampionTransitionWindow(QWidget):
         startChampionButtonLayout = QHBoxLayout()
         startChampionButtonLayout.addStretch()
         startChampionButton = QPushButton("Începe rundele campionilor")
+        startChampionButton.setFixedWidth(300)
         startChampionButton.clicked.connect(self.startChampionRounds)
         startChampionButtonLayout.addWidget(startChampionButton, 0, Qt.AlignCenter)
         startChampionButtonLayout.addStretch()
@@ -50,6 +51,7 @@ class ChampionTransitionWindow(QWidget):
         self.mainApp.timerDuration -= 5  # Reducem timpul pe întrebare cu 5 secunde
         self.mainApp.selectionTime = 1 # Se alege un răspuns în 1 secundă
         self.mainApp.championTeams = sorted(self.mainApp.totalScores.keys(), key=lambda team: self.mainApp.totalScores[team], reverse=True)[:2]  # Se aleg primele două echipe din clasament
+        print(self.mainApp.championTeams)
         self.mainApp.championScores[self.mainApp.championTeams[0]] += 50  # Primul loc începe cu un bonus de 50 puncte
 
         # Închiderea ferestrei de tranziție și afișarea primei întrebări pentru rundele de campioni

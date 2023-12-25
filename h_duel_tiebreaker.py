@@ -23,8 +23,12 @@ class TiebreakerWindow(QWidget):
         currentTeamLabel.setAlignment(Qt.AlignCenter)
         layout.addWidget(currentTeamLabel)
 
-        attackingTeam = self.mainApp.currentTeamName
-        defendingTeam = self.mainApp.selectedOpponent
+        if self.mainApp.roundType == 'thief':
+            attackingTeam = self.mainApp.currentTeamName
+            defendingTeam = self.mainApp.selectedOpponent
+        else:
+            attackingTeam = self.mainApp.championTeams[0]
+            defendingTeam = self.mainApp.championTeams[1]
         
         possible_questions = [q for q in self.mainApp.questions if q['categorie'] == "Departajare"]
         self.question = random.choice(possible_questions) if possible_questions else None
@@ -35,21 +39,31 @@ class TiebreakerWindow(QWidget):
             return
         
         # Afișarea întrebării
-        questionLabel = QLabel(self.question['întrebare'])
-        questionLabel.setAlignment(Qt.AlignCenter)
-        layout.addWidget(questionLabel)
+        self.questionLabel = QLabel(self.question['întrebare'])
+        self.questionLabel.setAlignment(Qt.AlignCenter)
+        layout.addWidget(self.questionLabel)
         
         # Câmpuri de introducere a răspunsurilor
         self.answerInputs = {}
         for team in [attackingTeam, defendingTeam]:
+            teamAnswerLayout = QHBoxLayout()  # Creează un layout orizontal pentru fiecare echipă
+            teamAnswerLayout.addStretch()  # Adaugă un spațiu elastic la început pentru aliniere centrală
+
+            # Creează și adaugă eticheta echipei
             teamLabel = QLabel(f"Răspuns echipa {team}")
             teamLabel.setAlignment(Qt.AlignCenter)
-            layout.addWidget(teamLabel)
+            teamAnswerLayout.addWidget(teamLabel)
 
+            # Creează și adaugă câmpul de introducere a răspunsului
             answerInput = QLineEdit(self)
             answerInput.setPlaceholderText("Introdu răspunsul aici")
-            layout.addWidget(answerInput)
+            answerInput.setFixedWidth(100)
+            teamAnswerLayout.addWidget(answerInput)
             self.answerInputs[team] = answerInput
+
+            teamAnswerLayout.addStretch()  # Adaugă un alt spațiu elastic la sfârșit pentru aliniere centrală
+            layout.addLayout(teamAnswerLayout)  # Adaugă layout-ul orizontal la layout-ul principal`
+
             
         # Timer
         self.timer = QLabel(f"Timp rămas: {self.mainApp.timerDuration} secunde")
@@ -59,6 +73,7 @@ class TiebreakerWindow(QWidget):
 
         # Buton pentru confirmarea răspunsurilor
         confirmButton = QPushButton("Confirmă răspunsurile", self)
+        confirmButton.setFixedWidth(300)
         confirmButton.clicked.connect(self.confirmAnswers)
         layout.addWidget(confirmButton, 0, Qt.AlignCenter)
 
@@ -82,10 +97,14 @@ class TiebreakerWindow(QWidget):
             self.timerQTimer.stop()
             self.questionLabel.hide()
     
+    # TODO: Implementați funcția pentru resetarea întrebării de departajare
     def resetForNewTiebreaker(self):
         
         # Selectați o nouă întrebare de departajare
         possible_questions = [q for q in self.mainApp.questions if q['categorie'] == "Departajare"]
+        if not possible_questions:
+            QMessageBox.warning(self, 'Eroare', 'Nu există întrebări de departajare disponibile.')
+        
         self.question = random.choice(possible_questions) if possible_questions else None
 
         if self.question is None:
@@ -106,31 +125,37 @@ class TiebreakerWindow(QWidget):
     def confirmAnswers(self):
         self.timerQTimer.stop()
         
-        self.mainApp.tiebreakerCounts[self.mainApp.currentTeamName] += 1
-        self.mainApp.tiebreakerCounts[self.mainApp.selectedOpponent] += 1
+        if self.mainApp.roundType == 'classic':
+            self.mainApp.tiebreakerCounts[self.mainApp.currentTeamName] += 1
+        if self.mainApp.roundType == 'thief' and self.mainApp.selectedOpponent is not None:
+            self.mainApp.tiebreakerCounts[self.mainApp.selectedOpponent] += 1
+        if self.mainApp.roundType == 'champion':
+            self.mainApp.tiebreakerCounts[self.mainApp.championTeams[0]] += 1
+            self.mainApp.tiebreakerCounts[self.mainApp.championTeams[1]] += 1
         
         # Extragerea și verificarea răspunsurilor
         answers = {team: float(input.text()) for team, input in self.answerInputs.items() if input.text()}
         # Presupunem că avem acces la răspunsul corect al întrebării de departajare
         correctAnswer = self.question['răspuns corect']
         
-        # Distanțele de la răspunsul fiecărei echipe la răspunsul corect
+       # Distanțele de la răspunsul fiecărei echipe la răspunsul corect
         distances = {team: abs(answer - correctAnswer) for team, answer in answers.items()}
 
         # Calculăm care echipă este mai aproape de răspunsul corect
         closestTeams = [team for team, distance in distances.items() if distance == min(distances.values())]
 
-        # Dacă avem mai mult de o echipă la egalitate, apare informare si se reia departajarea
         if len(closestTeams) > 1:
+            # Dacă există mai mult de o echipă la egalitate, se reia departajarea
             QMessageBox.information(self, 'Egalitate', 'Ambele echipe sunt la egalitate. Se va repeta departajarea.')
             self.resetForNewTiebreaker()
+            
         else:
-            # Echipa câștigătoare este cea mai aproape de răspunsul corect
+            # Dacă există o singură echipă câștigătoare
             winningTeam = closestTeams[0]
             defeatedTeam = [team for team in distances.keys() if team != winningTeam][0]
             self.roundAnswers[winningTeam] = True
             self.roundAnswers[defeatedTeam] = False
-            
+
             # Închiderea ferestrei
             self.scoreWindow = ScoreWindow(self.mainApp, self.roundAnswers)
             self.hide()

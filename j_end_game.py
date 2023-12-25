@@ -21,18 +21,19 @@ class EndGameWindow(QWidget):
         totalQuestions = self.mainApp.totalQuestionCount[winner]
 
         # Afișarea detaliilor câștigătorului
-        winnerDetails = QLabel(f'Câștigător: {winner}\nScor: {highestScore}\n{correctAnswersCount}/{totalQuestions} răspunsuri corecte\nÎntrebări de departajare: {self.mainApp.tieBreakerQuestions}')
+        winnerDetails = QLabel(f'Câștigător: {winner}\nScor (runde clasice & duel): {highestScore}\nScorul rundelor campionilor: {self.mainApp.championScores[winner]}\n{correctAnswersCount}/{totalQuestions} răspunsuri corecte la întrebările cu variante\nÎntrebări de departajare: {self.mainApp.tiebreakerCounts[winner]}')
         winnerDetails.setAlignment(Qt.AlignCenter)
         layout.addWidget(winnerDetails)
 
-        # Afișarea detaliilor pentru toate echipele
-        for team, score in sorted(self.mainApp.totalScores.items(), key=lambda item: item[1], reverse=True):
-            teamDetails = QLabel(f'Echipa: {team}\nScor: {score}\n{self.mainApp.correctAnswersCount[team]}/{self.mainApp.totalQuestionCount[team]} răspunsuri corecte\nÎntrebări de departajare: {self.mainApp.tieBreakerQuestions}')
-            teamDetails.setAlignment(Qt.AlignCenter)
-            layout.addWidget(teamDetails)
+        # # Afișarea detaliilor pentru toate echipele
+        # for team, score in sorted(self.mainApp.totalScores.items(), key=lambda item: item[1], reverse=True):
+        #     teamDetails = QLabel(f'Echipa: {team}\nScor: {score}\n{self.mainApp.correctAnswersCount[team]}/{self.mainApp.totalQuestionCount[team]} răspunsuri corecte\nÎntrebări de departajare: {self.mainApp.tieBreakerQuestions}')
+        #     teamDetails.setAlignment(Qt.AlignCenter)
+        #     layout.addWidget(teamDetails)
 
         # Buton de închidere
         closeButton = QPushButton('Închide', self)
+        closeButton.setFixedWidth(300)
         closeButton.clicked.connect(self.close)
         layout.addWidget(closeButton, 0, Qt.AlignCenter)
 

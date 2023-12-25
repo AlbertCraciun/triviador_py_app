@@ -17,10 +17,11 @@ class CategorySelectionWindow(QWidget):
         # Adaugă un spațiu înainte de widgeturi pentru a le împinge în jos
         layout.addStretch()
 
-        # Afișarea echipei de rând
-        currentTeamLabel = QLabel(f"Rândul echipei: {self.mainApp.currentTeamName}")
-        currentTeamLabel.setAlignment(Qt.AlignCenter)
-        layout.addWidget(currentTeamLabel)
+        if self.mainApp.roundType != 'champion':
+            # Afișarea echipei de rând
+            currentTeamLabel = QLabel(f"Rândul echipei: {self.mainApp.currentTeamName}")
+            currentTeamLabel.setAlignment(Qt.AlignCenter)
+            layout.addWidget(currentTeamLabel)
 
         if self.mainApp.roundType == 'thief':
             titleLabel = QLabel("Selectează echipa adversă și categoria")
@@ -43,10 +44,12 @@ class CategorySelectionWindow(QWidget):
 
             # Adăugare butoane categorie în layout-ul orizontal
             for category in self.mainApp.categories:
-                btn = QPushButton(category, self)
-                btn.setFixedWidth(300)  # Setează lățimea fixă a butonului
-                buttonLayout.addWidget(btn, 0, Qt.AlignCenter)  # Aliniază butonul pe centrul orizontal
-                btn.clicked.connect(lambda _, c=category: self.onCategorySelected(c))
+                possible_questions = [q for q in self.mainApp.questions if q['categorie'] == category and q['categorie'] != "Departajare"]
+                if possible_questions or category == "Aleator":
+                    btn = QPushButton(category, self)
+                    btn.setFixedWidth(300)  # Setează lățimea fixă a butonului
+                    buttonLayout.addWidget(btn, 0, Qt.AlignCenter)  # Aliniază butonul pe centrul orizontal
+                    btn.clicked.connect(lambda _, c=category: self.onCategorySelected(c))
 
             buttonLayout.addStretch()  # Adaugă un spațiu elastic după buton pentru a menține centrarea
             layout.addLayout(buttonLayout)  # Adaugă layout-ul orizontal în layout-ul vertical principal
