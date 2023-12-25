@@ -5,10 +5,11 @@ from g_duel_start import DuelTransitionWindow
 from i_champion_start import ChampionTransitionWindow
 
 class ScoreWindow(QWidget):
-    def __init__(self, mainApp, roundAnswers):
+    def __init__(self, mainApp, roundAnswers, correctAnser):
         super().__init__()
         self.mainApp = mainApp
         self.roundAnswers = roundAnswers  # Răspunsurile pentru runda curentă
+        self.correctAnser = correctAnser  # Răspunsul corect pentru runda curentă
         self.setAttribute(Qt.WA_DeleteOnClose, True)
         self.initUI()
 
@@ -16,6 +17,15 @@ class ScoreWindow(QWidget):
         layout = QVBoxLayout()
         
         roundScores = self.calculateScores(self.roundAnswers)
+        
+        # raspuns corect
+        correctLayout = QHBoxLayout()
+        correctLayout.addStretch()
+        correctLabel = QLabel(f"Răspuns corect: {self.correctAnser}")
+        correctLabel.setAlignment(Qt.AlignCenter)
+        correctLayout.addWidget(correctLabel)
+        correctLayout.addStretch()
+        layout.addLayout(correctLayout)
 
         if self.mainApp.roundType == 'classic' or self.mainApp.roundType == 'thief':
             for teamName in self.mainApp.teamNames:

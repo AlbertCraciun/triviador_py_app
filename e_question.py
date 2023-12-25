@@ -169,7 +169,7 @@ class QuestionWindow(QWidget):
                     self.mainApp.correctAnswersCount[team] += 1
             
             # Afișăm scorurile
-            self.scoreWindow = ScoreWindow(self.mainApp, roundAnswers)
+            self.scoreWindow = ScoreWindow(self.mainApp, roundAnswers, self.question['răspuns corect'])
             self.close()
             self.scoreWindow.show()
             
@@ -193,7 +193,7 @@ class QuestionWindow(QWidget):
                     self.close()
                     self.tiebreakerWindow.show()            
                 else:
-                    self.scoreWindow = ScoreWindow(self.mainApp, roundAnswers)
+                    self.scoreWindow = ScoreWindow(self.mainApp, roundAnswers, self.question['răspuns corect'])
                     self.close()
                     self.scoreWindow.show()
             
@@ -217,11 +217,12 @@ class QuestionWindow(QWidget):
             if self.mainApp.championTeams[0] in roundAnswers and self.mainApp.championTeams[1] in roundAnswers:
                 if roundAnswers[self.mainApp.championTeams[0]] is True and roundAnswers[self.mainApp.championTeams[1]] is True:
                     # Ambii participanți au răspuns corect, deci se inițiază departajarea
+                    QMessageBox.information(self, 'Info', 'Ambele echipe au răspuns corect.')
                     self.tiebreakerWindow = TiebreakerWindow(self.mainApp, roundAnswers)
                     self.close()
                     self.tiebreakerWindow.show()            
                 else:
-                    self.scoreWindow = ScoreWindow(self.mainApp, roundAnswers)
+                    self.scoreWindow = ScoreWindow(self.mainApp, roundAnswers, self.question['răspuns corect'])
                     self.close()
                     self.scoreWindow.show()
             
