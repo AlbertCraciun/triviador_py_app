@@ -45,4 +45,4 @@ class DuelTransitionWindow(QWidget):
         layout.addStretch()  # Adaugă spațiu pentru centrare verticală
         self.setLayout(layout)
         self.setWindowTitle("Tranziție Runde Duel")
-        self.setGeometry(300, 300, 400, 300)
+        self.showFullScreen()

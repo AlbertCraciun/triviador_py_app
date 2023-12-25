@@ -56,7 +56,7 @@ class ScoreWindow(QWidget):
         
         self.setLayout(layout)
         self.setWindowTitle("Scoruri")
-        self.setGeometry(300, 300, 400, 300)
+        self.showFullScreen()
         
     def calculateScores(self, roundAnswers):
         

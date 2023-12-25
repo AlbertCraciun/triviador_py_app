@@ -29,6 +29,12 @@ class MainApp(QApplication):
         self.startWindow = StartWindow(self)
         self.startWindow.show()
         self.championRoundsEnabled = False
+        
+        # Ajustați dimensiunile elementelor și fonturile
+        self.buttonWidth = 400
+        self.buttonHeight = 50
+        self.fontSize = 18 
+        
         self.setStyleSheet("""
             QWidget {
                 background-color: black;
@@ -80,6 +86,7 @@ class MainApp(QApplication):
         self.categories = set()
         self.questions = []
         self.selected_question = []
+        self.selected_tiebreaker_question = []
         
         self.randomQuestion = False
         self.roundType = "classic"

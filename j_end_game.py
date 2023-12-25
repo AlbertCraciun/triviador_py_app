@@ -39,7 +39,7 @@ class EndGameWindow(QWidget):
 
         self.setLayout(layout)
         self.setWindowTitle('Final de Joc')
-        self.setGeometry(300, 300, 400, 300)
+        self.showFullScreen()
 
     def closeEvent(self, event):
         # Confirmare înainte de închidere

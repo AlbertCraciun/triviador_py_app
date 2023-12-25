@@ -65,7 +65,7 @@ class CategorySelectionWindow(QWidget):
 
         self.setLayout(layout)
         self.setWindowTitle("Selectează Categoria")
-        self.setGeometry(300, 300, 400, 300)
+        self.showFullScreen()
 
     def startTimer(self):
         # Implementați logica pentru timer aici

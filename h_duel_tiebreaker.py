@@ -82,7 +82,7 @@ class TiebreakerWindow(QWidget):
 
         self.setLayout(layout)
         self.setWindowTitle("Departajare")
-        self.setGeometry(300, 300, 400, 300)
+        self.showFullScreen()
 
     def startTimer(self):
         self.countdown = self.mainApp.timerDuration
@@ -97,9 +97,7 @@ class TiebreakerWindow(QWidget):
             self.timerQTimer.stop()
             self.questionLabel.hide()
     
-    # TODO: Implementați funcția pentru resetarea întrebării de departajare
     def resetForNewTiebreaker(self):
-        
         # Selectați o nouă întrebare de departajare
         possible_questions = [q for q in self.mainApp.questions if q['categorie'] == "Departajare"]
         if not possible_questions:
@@ -143,6 +141,10 @@ class TiebreakerWindow(QWidget):
 
         # Calculăm care echipă este mai aproape de răspunsul corect
         closestTeams = [team for team, distance in distances.items() if distance == min(distances.values())]
+        
+        # Eliminăm întrebarea de departajare utilizată din lista de întrebări
+        if self.question in self.mainApp.questions:
+            self.mainApp.questions.remove(self.question)
 
         if len(closestTeams) > 1:
             # Dacă există mai mult de o echipă la egalitate, se reia departajarea

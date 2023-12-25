@@ -45,7 +45,7 @@ class ChampionTransitionWindow(QWidget):
         layout.addStretch()  # Pentru centrare verticală
         self.setLayout(layout)
         self.setWindowTitle("Tranziție către Rundele Campionilor")
-        self.setGeometry(300, 300, 400, 300)
+        self.showFullScreen()
 
     def startChampionRounds(self):
         self.mainApp.timerDuration -= 5  # Reducem timpul pe întrebare cu 5 secunde

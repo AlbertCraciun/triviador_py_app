@@ -176,7 +176,7 @@ class StartWindow(QWidget):
 
         self.setLayout(layout)
         self.setWindowTitle('Joc de Cultură Generală')
-        self.setGeometry(300, 300, 400, 300)
+        self.showFullScreen()
         
     def updateRoundSpinners(self):
         # Obținem numărul de echipe adăugate

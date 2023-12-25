@@ -122,7 +122,7 @@ class QuestionWindow(QWidget):
 
         self.setLayout(layout)
         self.setWindowTitle("Întrebare")
-        self.setGeometry(300, 300, 400, 300)
+        self.showFullScreen()
 
     def startTimer(self):
         self.countdown = self.mainApp.timerDuration
