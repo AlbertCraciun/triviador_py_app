@@ -1,0 +1,27 @@
+Scoruri finale
+Runde clasice: 3
+Runde de duel: 3
+Runde de campioni: 3
+-------------------
+Echipa: Albert
+Scor: 65
+Champion score: 150
+Număr total întrebări: 9
+Răspunsuri corecte: 6
+Întrebări de departajare: 1
+-------------------
+Echipa: Tati
+Scor: 60
+Champion score: 0
+Număr total întrebări: 9
+Răspunsuri corecte: 5
+Întrebări de departajare: 1
+-------------------
+Echipa: Mami
+Scor: -20
+Champion score: 0
+Număr total întrebări: 6
+Răspunsuri corecte: 3
+Întrebări de departajare: 2
+-------------------
+Joc terminat.

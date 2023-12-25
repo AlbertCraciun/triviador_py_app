@@ -31,15 +31,15 @@ class MainApp(QApplication):
         self.championRoundsEnabled = False
         
         # Ajustați dimensiunile elementelor și fonturile
-        self.buttonWidth = 400
-        self.buttonHeight = 40
-        self.backgroundImage = "background.jpg";
+        self.buttonWidth = 700
+        self.buttonHeight = 50
         self.backgroundColour = "black"
         self.buttonColour = "#444"
         self.buttonBorderColour = "#555"
-        self.fontSize = 20
+        self.fontSize = 40
         self.fontColour = "white"
         self.fontFamily = "Arial"
+        self.backgroundImage = "background triviador.png";
         
         self.setStyleSheet(f"""
             QWidget {{
@@ -77,7 +77,7 @@ class MainApp(QApplication):
             #     margin: 5px;
             # }}
             QCheckBox {{
-                spacing: 10px;
+                spacing: 100px;
             }}
             QComboBox {{
                 border: 1px solid {self.buttonBorderColour};

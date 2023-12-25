@@ -13,7 +13,7 @@ class StartWindow(QWidget):
 
     def initUI(self):
         # Setăm lungimea dorită pentru butoane
-        buttonWidth = 300
+        buttonWidth = 700
         layout = QVBoxLayout()
         
         # Adaugă un spațiu înainte de widgeturi pentru a le împinge în jos
