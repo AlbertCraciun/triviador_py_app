@@ -32,53 +32,61 @@ class MainApp(QApplication):
         
         # Ajustați dimensiunile elementelor și fonturile
         self.buttonWidth = 400
-        self.buttonHeight = 50
-        self.fontSize = 18 
+        self.buttonHeight = 40
+        self.backgroundImage = "background.jpg";
+        self.backgroundColour = "black"
+        self.buttonColour = "#444"
+        self.buttonBorderColour = "#555"
+        self.fontSize = 20
+        self.fontColour = "white"
+        self.fontFamily = "Arial"
         
-        self.setStyleSheet("""
-            QWidget {
-                background-color: black;
-                color: white; 
-                font-family: Arial;
-            }
-            QLabel {
-                font-size: 18px;
+        self.setStyleSheet(f"""
+            QWidget {{
+                background-color: {self.backgroundColour};
+                color: {self.fontColour};
+                font-family: {self.fontFamily};
+                font-size: {self.fontSize}px;
+            }}
+            QLabel {{
+                font-size: {self.fontSize}px;
                 text-align: center;
-            }
-            QPushButton {
-                background-color: #444;
-                border: 2px solid #555;
+            }}
+            QPushButton {{
+                background-color: {self.buttonColour};
+                border: 2px solid {self.buttonBorderColour};
                 border-radius: 10px;
                 padding: 5px;
-                font-size: 16px;
-                min-height: 30px;
+                font-size: {self.fontSize}px;
+                min-height: {self.buttonHeight}px;
                 margin: 5px;
-            }
-            QPushButton:hover {
+            }}
+            QPushButton:hover {{
                 background-color: #666;
-            }
-            QLineEdit {
-                border: 1px solid #555;
+            }}
+            QLineEdit {{
+                border: 1px solid {self.buttonBorderColour};
                 border-radius: 5px;
                 padding: 5px;
                 margin: 5px;
-            }
-            # QSpinBox {
-            #     border: 1px solid #555;
+            }}
+            # QSpinBox {{
+            #     border: 1px solid {self.buttonBorderColour};
             #     border-radius: 5px;
             #     padding: 5px;
             #     margin: 5px;
-            # }
-            QCheckBox {
+            # }}
+            QCheckBox {{
                 spacing: 10px;
-            }
-            QComboBox {
-                border: 1px solid #555;
+            }}
+            QComboBox {{
+                border: 1px solid {self.buttonBorderColour};
                 border-radius: 5px;
                 padding: 5px;
                 margin: 5px;
-            }
+            }}
         """)
+
         
         self.currentTeamIndex = -1
         self.currentTeamName = self.teamNames[self.currentTeamIndex] if self.teamNames else None
