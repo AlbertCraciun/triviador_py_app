@@ -1,0 +1,7 @@
+A: 50
+B: 30
+Runda curentă: thief
+Runde clasice rămase: 0
+Runde de duel rămase: 3
+Runde de campioni rămase: 1
+Echipa de rând: A

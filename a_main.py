@@ -109,6 +109,11 @@ class MainApp(QApplication):
         self.totalScores = {}
         self.championTeams = []  # Echipele care participă la rundele de campioni
 
+    def start_from_intermediate_state(self, intermediate_state_file):
+            if intermediate_state_file:
+                self.load_intermediate_state(intermediate_state_file)
+                self.showNextScreen()
+    
     def showNextScreen(self):
         
         if self.duelTransitionWindow is not None:
@@ -196,8 +201,48 @@ class MainApp(QApplication):
 
         print(f"Scorurile au fost salvate în fișierul: {filename}")
 
-#TODO: add module to start from thief round or champion round
+    def load_intermediate_state(self, file_path):
+        with open(file_path, 'r', encoding='utf-8') as file:
+            lines = file.readlines()
+            # Inițializați mai întâi lista de echipe
+            self.teamNames = []
+            for line in lines:
+                if ":" in line:  # Simplifică căutarea pentru linii care conțin ':'
+                    key, value = line.strip().split(":", 1)
+                    if key == 'Runda curentă':
+                        self.roundType = value.strip().lower()
+                    elif key == 'Runde clasice rămase':
+                        self.numClassicRounds = int(value.strip())
+                    elif key == 'Runde de duel rămase':
+                        self.numThiefRounds = int(value.strip())
+                    elif key == 'Runde de campioni rămase':
+                        self.numChampionRounds = int(value.strip())
+                    elif key == 'Echipa de rând':
+                        self.currentTeamName = value.strip()
+                    else:  # Presupunem că orice altceva este o echipă
+                        team_name = key.strip()
+                        score = int(value.strip())
+                        self.teamNames.append(team_name)
+                        self.totalScores[team_name] = score
+                        self.tiebreakerCounts[team_name] = 0
+                        self.totalQuestionCount[team_name] = 0
+                        self.correctAnswersCount[team_name] = 0
+                        self.championScores[team_name] = 0
+
+            # Acum că avem lista de echipe, putem seta indexul echipei curente
+            if self.currentTeamName in self.teamNames:
+                self.currentTeamIndex = self.teamNames.index(self.currentTeamName)
+            else:
+                raise ValueError(f"Echipa curentă '{self.currentTeamName}' nu este în lista de echipe încărcată.")
+
 
 if __name__ == '__main__':
     app = MainApp(sys.argv)
+    if len(sys.argv) > 2:
+        intermediate_state_file = sys.argv[1]
+        question_file = sys.argv[2]
+        app.loadQuestions(question_file)
+        app.start_from_intermediate_state(intermediate_state_file)
+    else:
+        app.startWindow.showFullScreen()
     sys.exit(app.exec_())
