@@ -1,7 +1,9 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QSpinBox, QMessageBox, QCheckBox, QFileDialog, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QSpinBox, QMessageBox, QCheckBox, \
+    QFileDialog, QHBoxLayout
 from PyQt5.QtCore import Qt
 
 from b_questions_loader import load_questions_from_excel
+
 
 class StartWindow(QWidget):
     def __init__(self, mainApp):
@@ -15,7 +17,7 @@ class StartWindow(QWidget):
         # Setăm lungimea dorită pentru butoane
         buttonWidth = 700
         layout = QVBoxLayout()
-        
+
         # Adaugă un spațiu înainte de widgeturi pentru a le împinge în jos
         layout.addStretch()
 
@@ -27,7 +29,7 @@ class StartWindow(QWidget):
         titleLayout.addWidget(title)
         titleLayout.addStretch()
         layout.addLayout(titleLayout)
-        
+
         # Buton pentru selectarea fișierului de întrebări
         filePickerLayout = QHBoxLayout()
         filePickerLayout.addStretch()
@@ -67,7 +69,6 @@ class StartWindow(QWidget):
 
         addTeamLayout.addStretch()
         layout.addLayout(addTeamLayout)
-
 
         # Selector pentru timpul de răspuns
         responseTimeLayout = QHBoxLayout()
@@ -131,7 +132,7 @@ class StartWindow(QWidget):
         thiefRoundsLayout.addStretch()
         layout.addLayout(thiefRoundsLayout)
 
-       # Checkbox pentru activarea rundelor campionilor
+        # Checkbox pentru activarea rundelor campionilor
         championRoundsLayout = QHBoxLayout()
         championRoundsLayout.addStretch()
 
@@ -177,7 +178,7 @@ class StartWindow(QWidget):
         self.setLayout(layout)
         self.setWindowTitle('Joc de Cultură Generală')
         self.showFullScreen()
-        
+
     def updateRoundSpinners(self):
         # Obținem numărul de echipe adăugate
         teamCount = len([input for input in self.teamInputs if input.isVisible() and input.text()])
@@ -198,7 +199,7 @@ class StartWindow(QWidget):
             self.numClassicRounds.setValue(0)
             self.numClassicRounds.setSingleStep(1)
             self.numThiefRounds.setSingleStep(1)
-        
+
     def onStart(self):
         # Colectare și validare date
         teamNames = [input.text() for input in self.teamInputs if input.isVisible() and input.text()]
@@ -217,7 +218,7 @@ class StartWindow(QWidget):
         if len(self.mainApp.questions) == 0:
             QMessageBox.warning(self, 'Eroare', 'Nu ați selectat fișierul de întrebări!')
             return
-        
+
         for teamName in teamNames:
             self.mainApp.totalScores[teamName] = 0
 
@@ -237,27 +238,27 @@ class StartWindow(QWidget):
         self.mainApp.tempNumThiefRounds = self.numThiefRounds.value()
         self.mainApp.tempNumClassicRounds = self.numClassicRounds.value()
         self.close()
-        self.mainApp.showNextScreen()  # Metodă pentru a afișa ecranul următor  
+        self.mainApp.showNextScreen()  # Metodă pentru a afișa ecranul următor
 
     def addTeam(self):
         # Activăm câmpul următor pentru numele echipei
         for teamInput in self.teamInputs:
             if not teamInput.isVisible():
                 teamInput.setVisible(True)
-                break    
-    
+                break
+
     def toggleChampionRounds(self, state):
         # Activăm sau dezactivăm selectorul pentru rundele campionilor
         isEnabled = state == Qt.Checked
         self.qLabelChampionRounds.setVisible(isEnabled)
         self.numChampionRounds.setVisible(isEnabled)
-        
+
     def openFileDialog(self):
         fileName, _ = QFileDialog.getOpenFileName(self, "Selectează fișierul excel", "", "Excel Files (*.xlsx)")
         if fileName:
             self.mainApp.questions = load_questions_from_excel(fileName)
             self.filePickerButton.setText(fileName.split('/')[-1])
-            
+
             # Resetăm lista de categorii
             self.mainApp.categories = []
 

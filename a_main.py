@@ -8,15 +8,16 @@ from b_questions_loader import load_questions_from_excel
 from c_start_window import StartWindow
 from j_end_game import EndGameWindow
 
+
 class MainApp(QApplication):
-        
+
     def __init__(self, sys_argv):
         super().__init__(sys_argv)
-        
+
         self.categorySelectionWindow = None
         self.duelTransitionWindow = None
         self.championTransitionWindow = None
-        
+
         self.teamNames = []
         self.timerDuration = 30
         self.selectionTime = 30
@@ -29,7 +30,7 @@ class MainApp(QApplication):
         self.startWindow = StartWindow(self)
         self.startWindow.show()
         self.championRoundsEnabled = False
-        
+
         # Ajustați dimensiunile elementelor și fonturile
         self.buttonWidth = 700
         self.buttonHeight = 50
@@ -39,8 +40,8 @@ class MainApp(QApplication):
         self.fontSize = 40
         self.fontColour = "white"
         self.fontFamily = "Arial"
-        self.backgroundImage = "background triviador.png";
-        
+        self.backgroundImage = "background triviador.png"
+
         self.setStyleSheet(f"""
             QWidget {{
                 background-color: {self.backgroundColour};
@@ -87,20 +88,19 @@ class MainApp(QApplication):
             }}
         """)
 
-        
         self.currentTeamIndex = -1
         self.currentTeamName = self.teamNames[self.currentTeamIndex] if self.teamNames else None
-        
+
         self.categories = set()
         self.questions = []
         self.selected_question = []
         self.selected_tiebreaker_question = []
-        
+
         self.randomQuestion = False
         self.roundType = "classic"
         self.selectedOpponent = None
         self.selectedCategory = None
-        
+
         # Inițializăm dicționare pentru contorizari
         self.tiebreakerCounts = {}
         self.totalQuestionCount = {}
@@ -110,11 +110,11 @@ class MainApp(QApplication):
         self.championTeams = []  # Echipele care participă la rundele de campioni
 
     def showNextScreen(self):
-        
+
         if self.duelTransitionWindow is not None:
             self.duelTransitionWindow.close()
             self.duelTransitionWindow = None
-            
+
         if self.championTransitionWindow is not None:
             self.championTransitionWindow.close()
             self.championTransitionWindow = None
@@ -123,33 +123,39 @@ class MainApp(QApplication):
             self.randomQuestion = False
             self.currentTeamIndex = (self.currentTeamIndex + 1) % len(self.teamNames)
             self.currentTeamName = self.teamNames[self.currentTeamIndex]
-                
+
             if self.roundType == "classic":
                 self.numClassicRounds -= 1
-                print("\n--Echipa curentă: ", self.currentTeamName, "\nRunda curentă: ", self.roundType, "\nRunde clasice rămase: ", self.numClassicRounds, "\nRunde de duel rămase: ", self.numThiefRounds, "\nRunde de campioni rămase: ", self.numChampionRounds)
+                print("\n--Echipa curentă: ", self.currentTeamName, "\nRunda curentă: ", self.roundType,
+                      "\nRunde clasice rămase: ", self.numClassicRounds, "\nRunde de duel rămase: ",
+                      self.numThiefRounds, "\nRunde de campioni rămase: ", self.numChampionRounds)
                 self.categorySelectionWindow = CategorySelectionWindow(self)
-                self.categorySelectionWindow.show() # Afișăm fereastra de selecție a categoriilor
+                self.categorySelectionWindow.show()  # Afișăm fereastra de selecție a categoriilor
             elif self.roundType == "thief":
                 self.numThiefRounds -= 1
-                print("\n--Echipa curentă: ", self.currentTeamName, "\nRunda curentă: ", self.roundType, "\nRunde clasice rămase: ", self.numClassicRounds, "\nRunde de duel rămase: ", self.numThiefRounds, "\nRunde de campioni rămase: ", self.numChampionRounds)
+                print("\n--Echipa curentă: ", self.currentTeamName, "\nRunda curentă: ", self.roundType,
+                      "\nRunde clasice rămase: ", self.numClassicRounds, "\nRunde de duel rămase: ",
+                      self.numThiefRounds, "\nRunde de campioni rămase: ", self.numChampionRounds)
                 self.categorySelectionWindow = CategorySelectionWindow(self)
-                self.categorySelectionWindow.show() # Afișăm fereastra de selecție a categoriilor
+                self.categorySelectionWindow.show()  # Afișăm fereastra de selecție a categoriilor
             elif self.roundType == "champion":
                 self.numChampionRounds -= 1
-                print("\n--Echipa curentă: ", self.currentTeamName, "\nRunda curentă: ", self.roundType, "\nRunde clasice rămase: ", self.numClassicRounds, "\nRunde de duel rămase: ", self.numThiefRounds, "\nRunde de campioni rămase: ", self.numChampionRounds)
+                print("\n--Echipa curentă: ", self.currentTeamName, "\nRunda curentă: ", self.roundType,
+                      "\nRunde clasice rămase: ", self.numClassicRounds, "\nRunde de duel rămase: ",
+                      self.numThiefRounds, "\nRunde de campioni rămase: ", self.numChampionRounds)
                 self.categorySelectionWindow = CategorySelectionWindow(self)
                 self.categorySelectionWindow.show()
             else:
                 QMessageBox.critical(None, "Eroare", "Runda curentă nu este validă!")
-                
+
         else:
             QMessageBox.critical(None, "Eroare", "Nu există echipe!")
             print("Nu există echipe!")
-    
+
     def loadQuestions(self, filePath):
         # Încărcați întrebările din fișierul Excel specificat
         self.questions = load_questions_from_excel(filePath)
-        
+
     def endGame(self):
         # Scrierea scorurilor în fișier
         self.saveScoresToFile()
@@ -157,7 +163,7 @@ class MainApp(QApplication):
         # Afișarea ferestrei de final de joc
         self.endGameWindow = EndGameWindow(self)
         self.endGameWindow.show()
-        
+
     def saveScoresToFile(self):
         filename = f"scoruri_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
         with open(filename, 'w', encoding='utf-8') as file:
@@ -167,8 +173,9 @@ class MainApp(QApplication):
             file.write(f'Runde de campioni: {self.tempNumChampionRounds}\n')
             file.write('-------------------\n')
 
-             # Sortăm echipele mai întâi după scorurile de campioni (daca există) și apoi după scorurile totale
-            sorted_teams = sorted(self.totalScores.keys(), key=lambda t: (self.championScores[t] > 0, self.totalScores[t]), reverse=True)
+            # Sortăm echipele mai întâi după scorurile de campioni (daca există) și apoi după scorurile totale
+            sorted_teams = sorted(self.totalScores.keys(),
+                                  key=lambda t: (self.championScores[t] > 0, self.totalScores[t]), reverse=True)
 
             for team in sorted_teams:
                 score = self.totalScores[team]
@@ -184,7 +191,7 @@ class MainApp(QApplication):
                 file.write(f'Răspunsuri corecte: {correctAnswers}\n')
                 file.write(f'Întrebări de departajare: {tiebreakerQuestions}\n')
                 file.write('-------------------\n')
-            
+
             # pune toate intrebarile utilizate in fisier
             file.write('Întrebări utilizate\n')
             for question in self.selected_question:
@@ -196,7 +203,8 @@ class MainApp(QApplication):
 
         print(f"Scorurile au fost salvate în fișierul: {filename}")
 
-#TODO: add module to start from thief round or champion round
+
+# TODO: add module to start from thief round or champion round
 
 if __name__ == '__main__':
     app = MainApp(sys.argv)
