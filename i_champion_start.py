@@ -8,6 +8,7 @@ class ChampionTransitionWindow(QWidget):
         self.initUI()
 
     def initUI(self):
+        buttonWidth = 700
         layout = QVBoxLayout()
         layout.addStretch()  # Pentru centrare verticală
 
@@ -36,7 +37,7 @@ class ChampionTransitionWindow(QWidget):
         startChampionButtonLayout = QHBoxLayout()
         startChampionButtonLayout.addStretch()
         startChampionButton = QPushButton("Începe rundele campionilor")
-        startChampionButton.setFixedWidth(300)
+        startChampionButton.setFixedWidth(buttonWidth)
         startChampionButton.clicked.connect(self.startChampionRounds)
         startChampionButtonLayout.addWidget(startChampionButton, 0, Qt.AlignCenter)
         startChampionButtonLayout.addStretch()

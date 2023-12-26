@@ -14,6 +14,7 @@ class ScoreWindow(QWidget):
         self.initUI()
 
     def initUI(self):
+        buttonWidth = 700
         layout = QVBoxLayout()
         
         roundScores = self.calculateScores(self.roundAnswers)
@@ -58,6 +59,7 @@ class ScoreWindow(QWidget):
         continueBtnLayout.addStretch()
 
         continueBtn = QPushButton('Continuă', self)
+        continueBtn.setFixedWidth(buttonWidth)
         continueBtn.clicked.connect(self.onContinue)
         continueBtnLayout.addWidget(continueBtn, 0, Qt.AlignCenter)
 

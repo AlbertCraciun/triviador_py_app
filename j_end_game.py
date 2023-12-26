@@ -8,6 +8,7 @@ class EndGameWindow(QWidget):
         self.initUI()
 
     def initUI(self):
+        buttonWidth = 700
         layout = QVBoxLayout()
 
         # Titlu
@@ -33,7 +34,7 @@ class EndGameWindow(QWidget):
 
         # Buton de închidere
         closeButton = QPushButton('Închide', self)
-        closeButton.setFixedWidth(300)
+        closeButton.setFixedWidth(buttonWidth)
         closeButton.clicked.connect(self.close)
         layout.addWidget(closeButton, 0, Qt.AlignCenter)
 

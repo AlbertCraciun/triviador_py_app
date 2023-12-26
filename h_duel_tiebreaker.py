@@ -13,6 +13,7 @@ class TiebreakerWindow(QWidget):
         self.initUI()
 
     def initUI(self):
+        buttonWidth = 700
         layout = QVBoxLayout()
 
         # Adaugă un spațiu înainte de widgeturi pentru a le împinge în jos
@@ -73,7 +74,7 @@ class TiebreakerWindow(QWidget):
 
         # Buton pentru confirmarea răspunsurilor
         confirmButton = QPushButton("Confirmă răspunsurile", self)
-        confirmButton.setFixedWidth(300)
+        confirmButton.setFixedWidth(buttonWidth)
         confirmButton.clicked.connect(self.confirmAnswers)
         layout.addWidget(confirmButton, 0, Qt.AlignCenter)
 

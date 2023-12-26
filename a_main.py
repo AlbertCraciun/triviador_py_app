@@ -184,10 +184,19 @@ class MainApp(QApplication):
                 file.write(f'Răspunsuri corecte: {correctAnswers}\n')
                 file.write(f'Întrebări de departajare: {tiebreakerQuestions}\n')
                 file.write('-------------------\n')
+            
+            # pune toate intrebarile utilizate in fisier
+            file.write('Întrebări utilizate\n')
+            for question in self.selected_question:
+                file.write(f'{question}\n')
+            for question in self.selected_tiebreaker_question:
+                file.write(f'{question}\n')
 
             file.write('Joc terminat.\n')
 
         print(f"Scorurile au fost salvate în fișierul: {filename}")
+
+#TODO: add module to start from thief round or champion round
 
 if __name__ == '__main__':
     app = MainApp(sys.argv)

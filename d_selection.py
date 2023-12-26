@@ -12,6 +12,7 @@ class CategorySelectionWindow(QWidget):
         self.initUI()
 
     def initUI(self):
+        buttonWidth = 700
         layout = QVBoxLayout()
 
         # Adaugă un spațiu înainte de widgeturi pentru a le împinge în jos
@@ -34,7 +35,7 @@ class CategorySelectionWindow(QWidget):
                 if team != self.mainApp.currentTeamName:
                     self.opponentTeamSelector.addItem(team)
             self.opponentTeamSelector.setCurrentIndex(0)
-            self.opponentTeamSelector.setFixedWidth(300)
+            self.opponentTeamSelector.setFixedWidth(buttonWidth)
             layout.addWidget(self.opponentTeamSelector, 0, Qt.AlignCenter)
         
         if self.mainApp.roundType != 'champion':

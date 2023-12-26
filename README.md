@@ -67,3 +67,5 @@ pyqt5 5.15.4 +
 - exista intrebari de departajare daca ambele echipe raspund corect la variante
 - pentru echipa care castiga runda se dau 50p de punct
 - daca numarul de runde de campioni s-a incheiat si intre punctajele celor doua echipe nu exista diferenta de 100 de puncte minim sau egal, atunci jocul se continua doar cu intrebari de departajare punctate cu 25p pana cand se ajunge la o diferenta de mai mare sau egala cu 100p pentru o echipa
+
+

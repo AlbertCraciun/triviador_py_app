@@ -9,6 +9,7 @@ class DuelTransitionWindow(QWidget):
         self.initUI()
 
     def initUI(self):
+        buttonWidth = 700
         layout = QVBoxLayout()
         layout.addStretch()  # Adaugă spațiu pentru centrare verticală
 
@@ -37,6 +38,7 @@ class DuelTransitionWindow(QWidget):
         startDuelButtonLayout = QHBoxLayout()
         startDuelButtonLayout.addStretch()
         startDuelButton = QPushButton("Începe Duelul")
+        startDuelButton.setFixedWidth(buttonWidth)
         startDuelButton.clicked.connect(self.mainApp.showNextScreen)
         startDuelButtonLayout.addWidget(startDuelButton, 0, Qt.AlignCenter)
         startDuelButtonLayout.addStretch()

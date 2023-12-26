@@ -14,6 +14,7 @@ class QuestionWindow(QWidget):
         self.initUI()
 
     def initUI(self):
+        butonWidth = 700
         layout = QVBoxLayout()
 
         # Adaugă un spațiu înainte de widgeturi pentru a le împinge în jos
@@ -110,7 +111,7 @@ class QuestionWindow(QWidget):
 
         # Adăugare buton de verificare răspunsuri în layout-ul orizontal
         self.answerButton = QPushButton("Verifică răspunsurile", self)
-        self.answerButton.setFixedWidth(300)
+        self.answerButton.setFixedWidth(butonWidth)
         self.answerButton.clicked.connect(self.checkTeamAnswers)
         answerButtonLayout.addWidget(self.answerButton, 0, Qt.AlignCenter)  # Aliniază butonul pe centrul orizontal
 
