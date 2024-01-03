@@ -112,7 +112,7 @@ class MainApp(QApplication):
         self.correctAnswersCount = {}
         self.championScores = {}
         self.totalScores = {}
-        self.cumulativeScores = {}
+        self.cumulativeScores = {team: [] for team in self.teamNames}
         self.championTeams = []  # Echipele care participă la rundele de campioni
 
     def start_from_intermediate_state(self, intermediate_state_file):

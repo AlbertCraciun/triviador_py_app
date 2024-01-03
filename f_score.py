@@ -179,6 +179,8 @@ class ScoreWindow(QWidget):
 
         # Adaugă scorurile actuale la scorurile cumulative
         for team in self.mainApp.teamNames:
+            if team not in self.mainApp.cumulativeScores or not isinstance(self.mainApp.cumulativeScores[team], list):
+                self.mainApp.cumulativeScores[team] = [0]
             self.mainApp.cumulativeScores[team].append(self.mainApp.totalScores[team])
 
         self.ax.clear()

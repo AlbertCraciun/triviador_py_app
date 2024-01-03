@@ -156,8 +156,8 @@ class StartWindow(QWidget):
         championRoundsSpinBoxLayout.addStretch()
 
         self.numChampionRounds = QSpinBox(self)
-        self.numChampionRounds.setRange(1, 30)  # între 1 și 30 runde
-        self.numChampionRounds.setValue(10)  # valoarea implicită
+        self.numChampionRounds.setRange(0, 30)  # între 0 și 30 runde
+        self.numChampionRounds.setValue(0)  # valoarea implicită
         self.qLabelChampionRounds = QLabel('Numărul de runde ale campionilor:')
         self.qLabelChampionRounds.setStyleSheet("color: grey")
         self.qLabelChampionRounds.setAlignment(Qt.AlignCenter)
@@ -254,7 +254,7 @@ class StartWindow(QWidget):
         self.mainApp.correctAnswersCount = {teamName: 0 for teamName in teamNames}
         self.mainApp.championScores = {teamName: 0 for teamName in teamNames}
         self.mainApp.totalScores = {teamName: 0 for teamName in teamNames}
-        self.mainApp.cumulativeScores = {teamName: 0 for teamName in teamNames}
+        self.mainApp.cumulativeScores = {teamName: [0] for teamName in teamNames}
         self.mainApp.timerDuration = self.responseTime.value()
         self.mainApp.categorySelectionTime = self.categorySelectionTime.value()
         self.mainApp.numClassicRounds = self.numClassicRounds.value()
