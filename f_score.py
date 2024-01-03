@@ -1,5 +1,8 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QMessageBox, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QMessageBox, QHBoxLayout, QScrollArea
 from PyQt5.QtCore import Qt
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+import random
 
 from g_duel_start import DuelTransitionWindow
 from i_champion_start import ChampionTransitionWindow
@@ -23,6 +26,7 @@ class ScoreWindow(QWidget):
         correctLayout = QHBoxLayout()
         correctLayout.addStretch()
         correctLabel = QLabel(f"Răspuns corect: {self.correctAnser}")
+        correctLabel.setWordWrap(True)  # Activează împărțirea textului pe mai multe linii
         correctLabel.setAlignment(Qt.AlignCenter)
         correctLayout.addWidget(correctLabel)
         correctLayout.addStretch()
@@ -66,7 +70,27 @@ class ScoreWindow(QWidget):
         continueBtnLayout.addStretch()
         layout.addLayout(continueBtnLayout)
         
-        self.setLayout(layout)
+        # self.setLayout(layout)
+        
+        # Crează un loc pentru grafic în layout
+        self.figure, self.ax = plt.subplots()
+        self.canvas = FigureCanvas(self.figure)
+        layout.addWidget(self.canvas)
+
+        self.updateGraph()
+        
+        # Create a scroll area
+        scrollArea = QScrollArea(self)
+        scrollArea.setWidgetResizable(True)  # Allow the content widget to resize with the scroll area
+        scrollArea.setAlignment(Qt.AlignCenter)
+        scrollArea.setFixedWidth(1680)
+        scrollArea.setFixedHeight(1050)
+
+        # Set the layout as the content of the scroll area
+        scrollWidget = QWidget()
+        scrollWidget.setLayout(layout)
+        scrollArea.setWidget(scrollWidget)
+        
         self.setWindowTitle("Scoruri")
         self.showFullScreen()
         
@@ -108,7 +132,8 @@ class ScoreWindow(QWidget):
                         if roundAnswers.get(defendingTeam) == False:
                             # Și echipa apărată a răspuns greșit
                             score = 20
-                        else :
+                        else:
+                            # Ambii participanți au răspuns corect, deci se inițiază departajarea
                             QMessageBox.warning(self, 'Eroare', 'Ambele echipe au răspuns corect.')
                     else:
                         # Echipa care atacă a răspuns greșit
@@ -120,7 +145,12 @@ class ScoreWindow(QWidget):
                         score = 10
                     else:
                         # Echipa apărată a răspuns greșit
-                        score = -20  # Pierde 20 de puncte
+                        if roundAnswers.get(attackingTeam) == False:
+                            # Dacă echipa care atacă a răspuns și ea greșit
+                            score = 0  # Echipa apărată nu pierde puncte
+                        else:
+                            # Echipa apărată a răspuns greșit și echipa care atacă a răspuns corect
+                            score = -20  # Pierde 20 de puncte
 
                 roundScores[team] = score
                 self.mainApp.totalScores[team] += score  # Actualizăm scorul total
@@ -142,6 +172,29 @@ class ScoreWindow(QWidget):
             QMessageBox.critical(None, "Eroare", "Runda curentă nu este validă!")
             return None
 
+    def updateGraph(self):
+        # Inițializăm un dicționar pentru a stoca scorurile pentru fiecare echipă
+        if not hasattr(self.mainApp, 'cumulativeScores'):
+            self.mainApp.cumulativeScores = {team: [0] for team in self.mainApp.teamNames}
+
+        # Adaugă scorurile actuale la scorurile cumulative
+        for team in self.mainApp.teamNames:
+            self.mainApp.cumulativeScores[team].append(self.mainApp.totalScores[team])
+
+        self.ax.clear()
+
+        # Desenăm liniile pentru fiecare echipă
+        for team, scores in self.mainApp.cumulativeScores.items():
+            rounds = list(range(len(scores)))
+            self.ax.plot(rounds, scores, label=team)
+
+        self.ax.set_title("Evoluția Scorurilor pe Echipe")
+        self.ax.set_xlabel("Runde")
+        self.ax.set_ylabel("Scoruri Totale")
+        self.ax.legend()  # Adăugarea legendei
+
+        self.canvas.draw()
+    
     def onContinue(self):
         self.close()  # Închidem fereastra curentă de scoruri
         

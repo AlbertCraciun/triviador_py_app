@@ -103,7 +103,8 @@ class TiebreakerWindow(QWidget):
         possible_questions = [q for q in self.mainApp.questions if q['categorie'] == "Departajare"]
         if not possible_questions:
             QMessageBox.warning(self, 'Eroare', 'Nu există întrebări de departajare disponibile.')
-        
+            return
+
         self.question = random.choice(possible_questions) if possible_questions else None
 
         if self.question is None:
@@ -113,13 +114,15 @@ class TiebreakerWindow(QWidget):
 
         # Actualizați textul întrebării
         self.questionLabel.setText(self.question['întrebare'])
+        self.questionLabel.show()  # Asigurați-vă că eticheta întrebării este vizibilă
 
         # Curățați câmpurile de răspuns existente
         for input in self.answerInputs.values():
             input.clear()
             
-        # Timer
+        # Resetare timer
         self.startTimer()
+
 
     def confirmAnswers(self):
         self.timerQTimer.stop()

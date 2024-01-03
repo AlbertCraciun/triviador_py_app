@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QRadioButton, QPushButton, QHBoxLayout, QButtonGroup, QMessageBox
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QRadioButton, QPushButton, QHBoxLayout, QButtonGroup, QMessageBox, QScrollArea
 from PyQt5.QtCore import QTimer, Qt
 
 from f_score import ScoreWindow
@@ -23,16 +23,19 @@ class QuestionWindow(QWidget):
         if self.mainApp.roundType == 'classic':
             # Afișarea echipei de rând
             currentTeamLabel = QLabel(f"Rândul echipei: {self.mainApp.currentTeamName}")
+            currentTeamLabel.setStyleSheet("color: green")
             currentTeamLabel.setAlignment(Qt.AlignCenter)
             layout.addWidget(currentTeamLabel)
         elif self.mainApp.roundType == 'thief':
             # Afișarea echipei de rând
             currentTeamLabel = QLabel(f"{self.mainApp.currentTeamName}  >>>  {self.mainApp.selectedOpponent}")
+            currentTeamLabel.setStyleSheet("color: green")
             currentTeamLabel.setAlignment(Qt.AlignCenter)
             layout.addWidget(currentTeamLabel)
         elif self.mainApp.roundType == 'champion':
             # Afișarea echipei de rând
             currentTeamLabel = QLabel(f"{self.mainApp.championTeams[0]}  x  {self.mainApp.championTeams[1]}")
+            currentTeamLabel.setStyleSheet("color: green")
             currentTeamLabel.setAlignment(Qt.AlignCenter)
             layout.addWidget(currentTeamLabel)
         else:
@@ -40,11 +43,13 @@ class QuestionWindow(QWidget):
         
         # Afișarea categoriei
         currentTeamLabel = QLabel(f"Categoria întrebării: {self.question['categorie']}")
+        currentTeamLabel.setStyleSheet("color: blue")
         currentTeamLabel.setAlignment(Qt.AlignCenter)
         layout.addWidget(currentTeamLabel)
 
         # Afișarea întrebării
         questionLabel = QLabel(self.question['întrebare'])
+        questionLabel.setWordWrap(True)  # Activează împărțirea textului pe mai multe linii
         questionLabel.setAlignment(Qt.AlignCenter)
         layout.addWidget(questionLabel)
 
@@ -55,6 +60,7 @@ class QuestionWindow(QWidget):
         for i, answer in enumerate(self.question['răspunsuri']):
             label_text = f"{letters[i]}. {answer}"
             text = QLabel(label_text)
+            text.setWordWrap(True)  # Activează împărțirea textului pe mai multe linii
             text.setAlignment(Qt.AlignCenter)
             self.labels.append(text)
             layout.addWidget(text)
@@ -62,6 +68,7 @@ class QuestionWindow(QWidget):
 
         # Timer
         self.timer = QLabel(f"Timp rămas: {self.mainApp.timerDuration} secunde")
+        self.timer.setStyleSheet("color: red")
         self.timer.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.timer)
         self.startTimer()
@@ -70,6 +77,7 @@ class QuestionWindow(QWidget):
             # Răspunsuri echipe
             for team in self.mainApp.teamNames:
                 teamLabel = QLabel(f"Răspunsuri echipa {team}")
+                # teamLabel.setStyleSheet("color: green")
                 teamLabel.setAlignment(Qt.AlignCenter)
                 layout.addWidget(teamLabel)
 
@@ -78,6 +86,7 @@ class QuestionWindow(QWidget):
                 teamRadioButtonGroup = QButtonGroup(self)
                 for option in letters:
                     radioButton = QRadioButton(option)
+                    # radioButton.setStyleSheet("color: green")
                     teamAnswerLayout.addWidget(radioButton)
                     teamRadioButtonGroup.addButton(radioButton)
                 teamAnswerLayout.addStretch()
@@ -88,6 +97,7 @@ class QuestionWindow(QWidget):
             # Răspunsuri echipe
             for team in self.mainApp.championTeams:
                 teamLabel = QLabel(f"Răspunsuri echipa {team}")
+                # teamLabel.setStyleSheet("color: green")
                 teamLabel.setAlignment(Qt.AlignCenter)
                 layout.addWidget(teamLabel)
 
@@ -96,6 +106,7 @@ class QuestionWindow(QWidget):
                 teamRadioButtonGroup = QButtonGroup(self)
                 for option in letters:
                     radioButton = QRadioButton(option)
+                    # radioButton.setStyleSheet("color: green")
                     teamAnswerLayout.addWidget(radioButton)
                     teamRadioButtonGroup.addButton(radioButton)
                 teamAnswerLayout.addStretch()
@@ -111,6 +122,7 @@ class QuestionWindow(QWidget):
 
         # Adăugare buton de verificare răspunsuri în layout-ul orizontal
         self.answerButton = QPushButton("Verifică răspunsurile", self)
+        #self.answerButton.setStyleSheet("color: green")
         self.answerButton.setFixedWidth(butonWidth)
         self.answerButton.clicked.connect(self.checkTeamAnswers)
         answerButtonLayout.addWidget(self.answerButton, 0, Qt.AlignCenter)  # Aliniază butonul pe centrul orizontal
@@ -121,7 +133,20 @@ class QuestionWindow(QWidget):
         # Adaugă un spațiu după widgeturi pentru a le centra
         layout.addStretch()
 
-        self.setLayout(layout)
+        # self.setLayout(layout)
+        
+        # Create a scroll area
+        scrollArea = QScrollArea(self)
+        scrollArea.setWidgetResizable(True)  # Allow the content widget to resize with the scroll area
+        scrollArea.setAlignment(Qt.AlignCenter)
+        scrollArea.setFixedWidth(1680)
+        scrollArea.setFixedHeight(1050)
+
+        # Set the layout as the content of the scroll area
+        scrollWidget = QWidget()
+        scrollWidget.setLayout(layout)
+        scrollArea.setWidget(scrollWidget)
+        
         self.setWindowTitle("Întrebare")
         self.showFullScreen()
 

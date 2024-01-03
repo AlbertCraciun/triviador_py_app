@@ -1,0 +1,21 @@
+Scoruri finale
+Runde clasice: 2
+Runde de duel: 2
+Runde de campioni: 1
+-------------------
+Echipa: Albert
+Scor: 0
+Champion score: 50
+Număr total întrebări: 5
+Răspunsuri corecte: 1
+Întrebări de departajare: 0
+-------------------
+Echipa: Ruben
+Scor: -20
+Champion score: 0
+Număr total întrebări: 5
+Răspunsuri corecte: 1
+Întrebări de departajare: 1
+-------------------
+Întrebări utilizate
+Joc terminat.

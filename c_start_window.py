@@ -1,5 +1,7 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QSpinBox, QMessageBox, QCheckBox, QFileDialog, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QSpinBox, QMessageBox, QCheckBox, QFileDialog, QHBoxLayout, QScrollArea
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont
+
 
 from b_questions_loader import load_questions_from_excel
 
@@ -24,6 +26,8 @@ class StartWindow(QWidget):
         titleLayout.addStretch()
         title = QLabel('AMiCUS Triviador\naplicație creată de Albert Crăciun')
         title.setAlignment(Qt.AlignCenter)
+        title.setFont(QFont('Arial', 20)) # TODO: nu merge
+        title.setStyleSheet("color: red")
         titleLayout.addWidget(title)
         titleLayout.addStretch()
         layout.addLayout(titleLayout)
@@ -75,6 +79,7 @@ class StartWindow(QWidget):
 
         # Adaugă eticheta (label)
         responseTimeLabel = QLabel('Timpul de răspuns (sec.):')
+        responseTimeLabel.setStyleSheet("color: grey")
         responseTimeLayout.addWidget(responseTimeLabel)
 
         # Adaugă QSpinBox
@@ -91,6 +96,7 @@ class StartWindow(QWidget):
         categoryTimeLayout.addStretch()
 
         categoryTimeLabel = QLabel('Timp selecție categorii (sec.):')
+        categoryTimeLabel.setStyleSheet("color: grey")
         categoryTimeLayout.addWidget(categoryTimeLabel)
 
         self.categorySelectionTime = QSpinBox(self)
@@ -106,6 +112,7 @@ class StartWindow(QWidget):
         classicRoundsLayout.addStretch()
 
         classicRoundsLabel = QLabel('Numărul de runde clasice:')
+        classicRoundsLabel.setStyleSheet("color: grey")
         classicRoundsLayout.addWidget(classicRoundsLabel)
 
         self.numClassicRounds = QSpinBox(self)
@@ -121,6 +128,7 @@ class StartWindow(QWidget):
         thiefRoundsLayout.addStretch()
 
         thiefRoundsLabel = QLabel('Numărul de runde duel:')
+        thiefRoundsLabel.setStyleSheet("color: grey")
         thiefRoundsLayout.addWidget(thiefRoundsLabel)
 
         self.numThiefRounds = QSpinBox(self)
@@ -136,6 +144,7 @@ class StartWindow(QWidget):
         championRoundsLayout.addStretch()
 
         self.championRoundsEnabled = QCheckBox('Activează rundele campionilor', self)
+        self.championRoundsEnabled.setStyleSheet("color: grey")
         self.championRoundsEnabled.stateChanged.connect(self.toggleChampionRounds)
         championRoundsLayout.addWidget(self.championRoundsEnabled)
 
@@ -150,6 +159,7 @@ class StartWindow(QWidget):
         self.numChampionRounds.setRange(1, 30)  # între 1 și 30 runde
         self.numChampionRounds.setValue(10)  # valoarea implicită
         self.qLabelChampionRounds = QLabel('Numărul de runde ale campionilor:')
+        self.qLabelChampionRounds.setStyleSheet("color: grey")
         self.qLabelChampionRounds.setAlignment(Qt.AlignCenter)
         championRoundsSpinBoxLayout.addWidget(self.qLabelChampionRounds)
         self.qLabelChampionRounds.setVisible(False)  # Inițial, ascundem întrebarea
@@ -164,6 +174,8 @@ class StartWindow(QWidget):
         startBtnLayout.addStretch()
 
         startBtn = QPushButton('Start', self)
+        # startBtn.setStyleSheet("color: red")
+        startBtn.setStyleSheet("background-color: black")
         startBtn.setFixedWidth(buttonWidth)
         startBtn.clicked.connect(self.onStart)
         startBtnLayout.addWidget(startBtn)
@@ -174,8 +186,22 @@ class StartWindow(QWidget):
         # Adaugă un spațiu după widgeturi pentru a le centra
         layout.addStretch()
 
-        self.setLayout(layout)
+        # self.setLayout(layout)
+        
+        # Create a scroll area
+        scrollArea = QScrollArea(self)
+        scrollArea.setWidgetResizable(True)  # Allow the content widget to resize with the scroll area
+        scrollArea.setAlignment(Qt.AlignCenter)
+        scrollArea.setFixedWidth(1680)
+        scrollArea.setFixedHeight(1050)
+
+        # Set the layout as the content of the scroll area
+        scrollWidget = QWidget()
+        scrollWidget.setLayout(layout)
+        scrollArea.setWidget(scrollWidget)
+        
         self.setWindowTitle('Joc de Cultură Generală')
+        #self.setCentralWidget(scrollArea)  # Set the scroll area as the central widget
         self.showFullScreen()
         
     def updateRoundSpinners(self):
@@ -228,6 +254,7 @@ class StartWindow(QWidget):
         self.mainApp.correctAnswersCount = {teamName: 0 for teamName in teamNames}
         self.mainApp.championScores = {teamName: 0 for teamName in teamNames}
         self.mainApp.totalScores = {teamName: 0 for teamName in teamNames}
+        self.mainApp.cumulativeScores = {teamName: 0 for teamName in teamNames}
         self.mainApp.timerDuration = self.responseTime.value()
         self.mainApp.categorySelectionTime = self.categorySelectionTime.value()
         self.mainApp.numClassicRounds = self.numClassicRounds.value()

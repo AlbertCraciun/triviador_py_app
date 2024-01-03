@@ -17,6 +17,9 @@ class MainApp(QApplication):
         self.duelTransitionWindow = None
         self.championTransitionWindow = None
         
+        # Inițializarea calei fișierului de log
+        self.logFilePath = "game_log.txt"  # Asumăm că fișierul de log este în același director
+        
         self.teamNames = []
         self.timerDuration = 30
         self.selectionTime = 30
@@ -34,9 +37,10 @@ class MainApp(QApplication):
         self.buttonWidth = 700
         self.buttonHeight = 50
         self.backgroundColour = "black"
-        self.buttonColour = "#444"
+        # self.buttonColour = "#444"
+        self.buttonColour = "black"
         self.buttonBorderColour = "#555"
-        self.fontSize = 40
+        self.fontSize = 50
         self.fontColour = "white"
         self.fontFamily = "Arial"
         self.backgroundImage = "background triviador.png";
@@ -86,8 +90,9 @@ class MainApp(QApplication):
                 margin: 5px;
             }}
         """)
-
         
+        self.currentRound = 0
+
         self.currentTeamIndex = -1
         self.currentTeamName = self.teamNames[self.currentTeamIndex] if self.teamNames else None
         
@@ -107,6 +112,7 @@ class MainApp(QApplication):
         self.correctAnswersCount = {}
         self.championScores = {}
         self.totalScores = {}
+        self.cumulativeScores = {}
         self.championTeams = []  # Echipele care participă la rundele de campioni
 
     def start_from_intermediate_state(self, intermediate_state_file):
@@ -115,6 +121,8 @@ class MainApp(QApplication):
                 self.showNextScreen()
     
     def showNextScreen(self):
+        
+        #self.updateLog()
         
         if self.duelTransitionWindow is not None:
             self.duelTransitionWindow.close()
@@ -201,6 +209,32 @@ class MainApp(QApplication):
 
         print(f"Scorurile au fost salvate în fișierul: {filename}")
 
+    def updateLog(self):
+        with open(self.logFilePath, 'w', encoding='utf-8') as file:
+            file.write('Scoruri și întrebări până în prezent\n')
+            file.write('-------------------\n')
+            # Scrie scorurile și întrebările
+            for team in sorted(self.totalScores.keys(), key=lambda t: (self.championScores[t] > 0, self.totalScores[t]), reverse=True):
+                score = self.totalScores[team]
+                totalQuestions = self.totalQuestionCount[team]
+                correctAnswers = self.correctAnswersCount[team]
+                tiebreakerQuestions = self.tiebreakerCounts[team]
+                championScore = self.championScores[team]
+
+                file.write(f'Echipa: {team}\n')
+                file.write(f'Scor: {score}\n')
+                file.write(f'Champion score: {championScore}\n')
+                file.write(f'Număr total întrebări: {totalQuestions}\n')
+                file.write(f'Răspunsuri corecte: {correctAnswers}\n')
+                file.write(f'Întrebări de departajare: {tiebreakerQuestions}\n')
+                file.write('-------------------\n')
+
+            file.write('Întrebări utilizate până în prezent\n')
+            for question in self.selected_question:
+                file.write(f'{question}\n')
+            for question in self.selected_tiebreaker_question:
+                file.write(f'{question}\n')
+    
     def load_intermediate_state(self, file_path):
         with open(file_path, 'r', encoding='utf-8') as file:
             lines = file.readlines()

@@ -1,6 +1,7 @@
 import random
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QMessageBox, QHBoxLayout, QComboBox, QGridLayout, QVBoxLayout
 from PyQt5.QtCore import QTimer, Qt
+from PyQt5.QtGui import QFont
 
 from e_question import QuestionWindow
 
@@ -22,10 +23,13 @@ class CategorySelectionWindow(QWidget):
             # Afișarea echipei de rând
             currentTeamLabel = QLabel(f"Rândul echipei: {self.mainApp.currentTeamName}")
             currentTeamLabel.setAlignment(Qt.AlignCenter)
+            currentTeamLabel.setFont(QFont('Arial', 20)) #TODO: nu merge
+            currentTeamLabel.setStyleSheet("color: green")
             layout.addWidget(currentTeamLabel)
 
         if self.mainApp.roundType == 'thief':
             titleLabel = QLabel("Selectează echipa adversă și categoria")
+            titleLabel.setStyleSheet("color: green")
             titleLabel.setAlignment(Qt.AlignCenter)
             layout.addWidget(titleLabel)
 
@@ -48,7 +52,7 @@ class CategorySelectionWindow(QWidget):
                 possible_questions = [q for q in self.mainApp.questions if q['categorie'] == category and q['categorie'] != "Departajare"]
                 if possible_questions or category == "Aleator":
                     btn = QPushButton(category, self)
-                    btn.setFixedWidth(300)  # Setează lățimea fixă a butonului
+                    btn.setFixedWidth(buttonWidth)  # Setează lățimea fixă a butonului
                     buttonLayout.addWidget(btn, 0, Qt.AlignCenter)  # Aliniază butonul pe centrul orizontal
                     btn.clicked.connect(lambda _, c=category: self.onCategorySelected(c))
 
@@ -57,6 +61,7 @@ class CategorySelectionWindow(QWidget):
          
         # Timer
         self.timer = QLabel(f"Timp rămas: {self.mainApp.selectionTime} secunde")
+        self.timer.setStyleSheet("color: red")
         self.timer.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.timer)
         self.startTimer()

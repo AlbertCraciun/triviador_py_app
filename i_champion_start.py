@@ -49,7 +49,7 @@ class ChampionTransitionWindow(QWidget):
         self.showFullScreen()
 
     def startChampionRounds(self):
-        self.mainApp.timerDuration -= 5  # Reducem timpul pe întrebare cu 5 secunde
+        self.mainApp.timerDuration -= 2  # Reducem timpul pe întrebare cu 2 secunde
         self.mainApp.selectionTime = 1 # Se alege un răspuns în 1 secundă
         self.mainApp.championTeams = sorted(self.mainApp.totalScores.keys(), key=lambda team: self.mainApp.totalScores[team], reverse=True)[:2]  # Se aleg primele două echipe din clasament
         print(self.mainApp.championTeams)
