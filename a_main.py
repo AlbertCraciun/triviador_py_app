@@ -104,7 +104,7 @@ class MainApp(QApplication):
         self.randomQuestion = False
         self.roundType = "classic"
         self.selectedOpponent = None
-        self.selectedCategory = None
+        self.selectedCategory = None        
         
         # Inițializăm dicționare pentru contorizari
         self.tiebreakerCounts = {}
@@ -114,6 +114,7 @@ class MainApp(QApplication):
         self.totalScores = {}
         self.cumulativeScores = {team: [] for team in self.teamNames}
         self.championTeams = []  # Echipele care participă la rundele de campioni
+        self.teamColors = {}
 
     def start_from_intermediate_state(self, intermediate_state_file):
             if intermediate_state_file:
@@ -139,17 +140,14 @@ class MainApp(QApplication):
                 
             if self.roundType == "classic":
                 self.numClassicRounds -= 1
-                print("\n--Echipa curentă: ", self.currentTeamName, "\nRunda curentă: ", self.roundType, "\nRunde clasice rămase: ", self.numClassicRounds, "\nRunde de duel rămase: ", self.numThiefRounds, "\nRunde de campioni rămase: ", self.numChampionRounds)
                 self.categorySelectionWindow = CategorySelectionWindow(self)
                 self.categorySelectionWindow.show() # Afișăm fereastra de selecție a categoriilor
             elif self.roundType == "thief":
                 self.numThiefRounds -= 1
-                print("\n--Echipa curentă: ", self.currentTeamName, "\nRunda curentă: ", self.roundType, "\nRunde clasice rămase: ", self.numClassicRounds, "\nRunde de duel rămase: ", self.numThiefRounds, "\nRunde de campioni rămase: ", self.numChampionRounds)
                 self.categorySelectionWindow = CategorySelectionWindow(self)
                 self.categorySelectionWindow.show() # Afișăm fereastra de selecție a categoriilor
             elif self.roundType == "champion":
                 self.numChampionRounds -= 1
-                print("\n--Echipa curentă: ", self.currentTeamName, "\nRunda curentă: ", self.roundType, "\nRunde clasice rămase: ", self.numClassicRounds, "\nRunde de duel rămase: ", self.numThiefRounds, "\nRunde de campioni rămase: ", self.numChampionRounds)
                 self.categorySelectionWindow = CategorySelectionWindow(self)
                 self.categorySelectionWindow.show()
             else:

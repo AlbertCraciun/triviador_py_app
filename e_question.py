@@ -195,7 +195,7 @@ class QuestionWindow(QWidget):
                     self.mainApp.correctAnswersCount[team] += 1
             
             # Afișăm scorurile
-            self.scoreWindow = ScoreWindow(self.mainApp, roundAnswers, self.question['răspuns corect'])
+            self.scoreWindow = ScoreWindow(self.mainApp, roundAnswers, self.question['răspuns corect'], self.question)
             self.close()
             self.scoreWindow.show()
             
@@ -219,7 +219,7 @@ class QuestionWindow(QWidget):
                     self.close()
                     self.tiebreakerWindow.show()            
                 else:
-                    self.scoreWindow = ScoreWindow(self.mainApp, roundAnswers, self.question['răspuns corect'])
+                    self.scoreWindow = ScoreWindow(self.mainApp, roundAnswers, self.question['răspuns corect'], self.question)
                     self.close()
                     self.scoreWindow.show()
             
@@ -248,10 +248,17 @@ class QuestionWindow(QWidget):
                     self.close()
                     self.tiebreakerWindow.show()            
                 else:
-                    self.scoreWindow = ScoreWindow(self.mainApp, roundAnswers, self.question['răspuns corect'])
+                    self.scoreWindow = ScoreWindow(self.mainApp, roundAnswers, self.question['răspuns corect'], self.question)
                     self.close()
                     self.scoreWindow.show()
             
             else:
                 print("Nu s-a găsit răspunsul echipei.")
                 QMessageBox.warning(self, 'Eroare', 'Nu s-a găsit răspunsul echipei.')
+
+
+#TODO: add a 50-50 button to remove 2 wrong answers and leave 1 correct and 1 wrong answer
+#TODO: add a button to ask the public for help (the public will vote for the correct answer and the team will choose the most voted answer)
+#TODO: add a button to call a friend (the friend will give the correct answer)
+#TODO: add a button to steal the answer from the opponent (the opponent will give the correct answer)
+#TODO: add a butoon to pass the question (the team will lose the question and the opponent will have the chance to answer it)

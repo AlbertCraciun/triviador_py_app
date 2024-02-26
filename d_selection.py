@@ -93,7 +93,6 @@ class CategorySelectionWindow(QWidget):
     def onCategorySelected(self, category):
         self.timerQTimer.stop()
         # Implementați logica pentru atunci când o categorie este selectată
-        print(f"Categoria selectată: {category}")
         self.mainApp.selectedCategory = category
         
         if len(self.mainApp.questions) == 0:

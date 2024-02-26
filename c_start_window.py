@@ -1,3 +1,4 @@
+import random
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QSpinBox, QMessageBox, QCheckBox, QFileDialog, QHBoxLayout, QScrollArea
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
@@ -255,6 +256,10 @@ class StartWindow(QWidget):
         self.mainApp.championScores = {teamName: 0 for teamName in teamNames}
         self.mainApp.totalScores = {teamName: 0 for teamName in teamNames}
         self.mainApp.cumulativeScores = {teamName: [0] for teamName in teamNames}
+        
+        # self.mainApp.colors = StartWindow.generate_random_colors(len(teamNames))
+        # self.mainApp.teamColors = {teamName: self.mainApp.colors[i] for i, teamName in enumerate(teamNames)}
+        
         self.mainApp.timerDuration = self.responseTime.value()
         self.mainApp.categorySelectionTime = self.categorySelectionTime.value()
         self.mainApp.numClassicRounds = self.numClassicRounds.value()
@@ -272,7 +277,11 @@ class StartWindow(QWidget):
             if not teamInput.isVisible():
                 teamInput.setVisible(True)
                 break    
-    
+
+    # def generate_random_colors(n):
+    #     """ Generează n culori random în format hex. """
+    #     return ['#' + ''.join([random.choice('0123456789ABCDEF') for _ in range(6)]) for _ in range(n)]
+        
     def toggleChampionRounds(self, state):
         # Activăm sau dezactivăm selectorul pentru rundele campionilor
         isEnabled = state == Qt.Checked
