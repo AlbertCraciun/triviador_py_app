@@ -206,7 +206,16 @@ class QuestionWindow(QWidget):
                 if self.question['categorie'] != "Departajare":
                     self.mainApp.totalQuestionCount[team] += 1
         
+        allTeamsAnswered = all([group.checkedButton() for _, group in self.teamAnswersWidgets])
+        
+        if not allTeamsAnswered:
+            # Dacă nu toate echipele au selectat un răspuns, afișează un mesaj de avertizare și repornește timerul
+            QMessageBox.warning(self, 'Atenție', 'Toate echipele trebuie să selecteze un răspuns.')
+            self.timerQTimer.start(1000)  # Oprește metoda aici, fără să treacă la calculul scorurilor
+            return
+        
         if self.mainApp.roundType == 'classic':
+            
             roundAnswers = {}
             for team, teamRadioButtonGroup in self.teamAnswersWidgets:
                 selectedButton = teamRadioButtonGroup.checkedButton()

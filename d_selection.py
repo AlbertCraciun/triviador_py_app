@@ -1,6 +1,6 @@
 import random
 
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QMessageBox, QComboBox, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QMessageBox, QComboBox, QVBoxLayout, QScrollArea, QHBoxLayout
 from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtGui import QFont
 
@@ -44,21 +44,31 @@ class CategorySelectionWindow(QWidget):
             layout.addWidget(self.opponentTeamSelector, 0, Qt.AlignCenter)
         
         if self.mainApp.roundType != 'champion':
-            # Creare QHBoxLayout pentru alinierea butoanelor pe orizontală
-            buttonLayout = QVBoxLayout()
-            buttonLayout.addStretch()  # Adaugă un spațiu elastic înainte de buton pentru a-l împinge către centru
+            # Container pentru butoanele de categorii
+            categoryContainer = QWidget()
+            categoryLayout = QVBoxLayout(categoryContainer)
 
-            # Adăugare butoane categorie în layout-ul orizontal
+            # Adăugare butoane categorie în layout-ul vertical
             for category in self.mainApp.categories:
                 possible_questions = [q for q in self.mainApp.questions if q['categorie'] == category and q['categorie'] != "Departajare"]
                 if possible_questions or category == "Aleator":
-                    btn = QPushButton(category, self)
-                    btn.setFixedWidth(buttonWidth)  # Setează lățimea fixă a butonului
-                    buttonLayout.addWidget(btn, 0, Qt.AlignCenter)  # Aliniază butonul pe centrul orizontal
+                    btn = QPushButton(category)
+                    btn.setFixedWidth(700)  # Am folosit valoarea direct aici pentru simplitate
+                    categoryLayout.addWidget(btn)
                     btn.clicked.connect(lambda _, c=category: self.onCategorySelected(c))
 
-            buttonLayout.addStretch()  # Adaugă un spațiu elastic după buton pentru a menține centrarea
-            layout.addLayout(buttonLayout)  # Adaugă layout-ul orizontal în layout-ul vertical principal
+            # Crearea QScrollArea și setarea widget-ului container ca fiind conținutul său
+            scrollArea = QScrollArea()
+            scrollArea.setWidgetResizable(True)
+            scrollArea.setWidget(categoryContainer)
+
+            # Layout orizontal pentru centru
+            centerLayout = QHBoxLayout()
+            centerLayout.addStretch()  # Adaugă un spațiu elastic înainte de scrollArea pentru a-l împinge spre centru
+            centerLayout.addWidget(scrollArea)  # Adaugă scrollArea în layout
+            centerLayout.addStretch()  # Adaugă un spațiu elastic după scrollArea pentru a menține centrarea
+
+            layout.addLayout(centerLayout)  # Adaugă layout-ul orizontal în layout-ul principal al ferestrei
          
         # Timer
         self.timer = QLabel(f"Timp rămas: {self.mainApp.selectionTime} secunde")
