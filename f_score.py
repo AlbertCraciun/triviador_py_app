@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QMessageBox, QHBoxLayout, QScrollArea
 from PyQt5.QtCore import Qt
 import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 from g_duel_start import DuelTransitionWindow
@@ -39,7 +38,7 @@ class ScoreWindow(QWidget):
                 scoreLayout.addStretch()
 
                 score = roundScores.get(teamName, 0)
-                label = QLabel(f"{teamName}: Scor Runda: {score}, Total: {self.mainApp.totalScores[teamName]}")
+                label = QLabel(f"Echipa {teamName}: Scor Runda: {score}, Total: {self.mainApp.totalScores[teamName]}")
                 label.setAlignment(Qt.AlignCenter)
                 scoreLayout.addWidget(label)
 
@@ -52,7 +51,7 @@ class ScoreWindow(QWidget):
                 scoreLayout.addStretch()
 
                 score = roundScores.get(teamName, 0)
-                label = QLabel(f"{teamName}: Scor Runda: {score}, Total: {self.mainApp.championScores[teamName]}")
+                label = QLabel(f"Echipa {teamName}: Scor Runda: {score}, Total: {self.mainApp.championScores[teamName]}")
                 label.setAlignment(Qt.AlignCenter)
                 scoreLayout.addWidget(label)
 
@@ -93,11 +92,11 @@ class ScoreWindow(QWidget):
         continueBtn.clicked.connect(self.onContinue)
         buttonsLayout.addWidget(continueBtn, 0, Qt.AlignCenter)
 
-        # Buton pentru corectare răspuns
-        self.correctAnswerBtn = QPushButton('Corectează răspuns', self)
-        self.correctAnswerBtn.setFixedWidth(buttonWidth)
-        self.correctAnswerBtn.clicked.connect(self.openCorrectAnswerDialog)
-        buttonsLayout.addWidget(self.correctAnswerBtn, 0, Qt.AlignCenter)
+        # # Buton pentru corectare răspuns
+        # self.correctAnswerBtn = QPushButton('Corectează răspuns', self)
+        # self.correctAnswerBtn.setFixedWidth(buttonWidth)
+        # self.correctAnswerBtn.clicked.connect(self.openCorrectAnswerDialog)
+        # buttonsLayout.addWidget(self.correctAnswerBtn, 0, Qt.AlignCenter)
 
         buttonsLayout.addStretch()
 

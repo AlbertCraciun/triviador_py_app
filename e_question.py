@@ -73,30 +73,55 @@ class QuestionWindow(QWidget):
         layout.addWidget(self.timer)
         self.startTimer()
 
+        # if self.mainApp.roundType != 'champion':
+        #     # Răspunsuri echipe
+        #     for team in self.mainApp.teamNames:
+        #         teamLabel = QLabel(f"Răspunsuri echipa {team}")
+        #         # teamLabel.setStyleSheet("color: green")
+        #         teamLabel.setAlignment(Qt.AlignCenter)
+        #         layout.addWidget(teamLabel)
+
+        #         teamAnswerLayout = QHBoxLayout()
+        #         teamAnswerLayout.addStretch()
+        #         teamRadioButtonGroup = QButtonGroup(self)
+        #         for option in letters:
+        #             radioButton = QRadioButton(option)
+        #             # radioButton.setStyleSheet("color: green")
+        #             teamAnswerLayout.addWidget(radioButton)
+        #             teamRadioButtonGroup.addButton(radioButton)
+        #         teamAnswerLayout.addStretch()
+
+        #         self.teamAnswersWidgets.append((team, teamRadioButtonGroup))
+        #         layout.addLayout(teamAnswerLayout)
+        # elif self.mainApp.roundType == 'champion':
         if self.mainApp.roundType != 'champion':
             # Răspunsuri echipe
             for team in self.mainApp.teamNames:
-                teamLabel = QLabel(f"Răspunsuri echipa {team}")
-                # teamLabel.setStyleSheet("color: green")
-                teamLabel.setAlignment(Qt.AlignCenter)
-                layout.addWidget(teamLabel)
+                # Creează un QHBoxLayout pentru fiecare echipă
+                teamLayout = QHBoxLayout()
+                
+                teamLayout.addStretch()  # Adaugă un spațiu elastic înainte de conținut pentru a-l împinge spre centru
 
-                teamAnswerLayout = QHBoxLayout()
-                teamAnswerLayout.addStretch()
+                # Adaugă eticheta echipei în layout
+                teamLabel = QLabel(f"Echipa {team}: ")
+                teamLabel.setAlignment(Qt.AlignCenter)
+                teamLayout.addWidget(teamLabel)
+
+                # Grupul de radiobuttons pentru echipă
                 teamRadioButtonGroup = QButtonGroup(self)
                 for option in letters:
                     radioButton = QRadioButton(option)
-                    # radioButton.setStyleSheet("color: green")
-                    teamAnswerLayout.addWidget(radioButton)
                     teamRadioButtonGroup.addButton(radioButton)
-                teamAnswerLayout.addStretch()
+                    teamLayout.addWidget(radioButton)  # Adaugă fiecare radiobutton în layout-ul echipei
+
+                teamLayout.addStretch()  # Adaugă un spațiu elastic după conținut pentru a centra conținutul în layout
 
                 self.teamAnswersWidgets.append((team, teamRadioButtonGroup))
-                layout.addLayout(teamAnswerLayout)
+                layout.addLayout(teamLayout)  # Adaugă layout-ul echipei în layout-ul principal
         elif self.mainApp.roundType == 'champion':
             # Răspunsuri echipe
             for team in self.mainApp.championTeams:
-                teamLabel = QLabel(f"Răspunsuri echipa {team}")
+                teamLabel = QLabel(f"Echipa {team}")
                 # teamLabel.setStyleSheet("color: green")
                 teamLabel.setAlignment(Qt.AlignCenter)
                 layout.addWidget(teamLabel)

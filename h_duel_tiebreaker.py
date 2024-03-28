@@ -163,7 +163,7 @@ class TiebreakerWindow(QWidget):
             self.roundAnswers[defeatedTeam] = False
 
             # Închiderea ferestrei
-            self.scoreWindow = ScoreWindow(self.mainApp, self.roundAnswers, self.question['răspuns corect'])
+            self.scoreWindow = ScoreWindow(self.mainApp, self.roundAnswers, self.question['răspuns corect'], self.question)
             self.hide()
             self.scoreWindow.show()
         
